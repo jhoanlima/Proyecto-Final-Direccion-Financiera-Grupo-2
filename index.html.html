@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMI Financiero | Exportadora de Café Las Verapaces</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --azul:#172554;--azul2:#1e3a8a;--azul3:#dbeafe;--gris-fondo:#e9edf2;
+ --blanco:#fff;--texto:#1f2937;--gris:#64748b;--borde:#d6dde6;
+ --verde:#166534;--verde-bg:#dcfce7;--amarillo:#92400e;--amarillo-bg:#fef3c7;
+ --rojo:#991b1b;--rojo-bg:#fee2e2;
+}
+body{
+ font-family:"Century Gothic",CenturyGothic,AppleGothic,Arial,sans-serif;
+ background:var(--gris-fondo);color:var(--texto);line-height:1.45;
+}
+header{background:linear-gradient(135deg,#172554,#1e3a8a);color:#fff;padding:26px 5%;box-shadow:0 2px 8px rgba(15,23,42,.18)}
+header .cabecera{max-width:1250px;margin:auto}
+header h1{font-size:26px;margin-bottom:5px;letter-spacing:.2px}
+header p{color:#dbeafe;font-size:14px}
+nav{background:#fff;border-bottom:1px solid var(--borde);padding:12px max(5%,calc((100% - 1250px)/2));display:flex;gap:8px;overflow-x:auto;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(15,23,42,.05)}
+nav button{border:0;background:#eef2f7;color:var(--texto);padding:10px 15px;border-radius:8px;cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:bold}
+nav button:hover{background:#dbeafe}
+nav button.activo{background:var(--azul2);color:#fff}
+main{max-width:1250px;margin:30px auto;padding:0 20px 55px}
+.paso{display:none}.paso.activo{display:block}
+.titulo-paso{margin-bottom:24px}.titulo-paso h2{color:var(--azul);margin-bottom:7px;font-size:24px}.titulo-paso p{color:var(--gris)}
+.tarjeta{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:22px;margin-bottom:22px;box-shadow:0 3px 12px rgba(15,23,42,.05)}
+.tarjeta h3{color:var(--azul);margin-bottom:18px;font-size:17px}
+.grid-datos{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.campo label{display:block;font-size:12px;font-weight:bold;margin-bottom:6px;color:#475569}
+.campo input,.campo textarea{width:100%;padding:10px 12px;border:1px solid var(--borde);border-radius:7px;font:inherit;font-size:13px;background:#fff}
+.campo input:focus,.campo textarea:focus,td input:focus{outline:2px solid #bfdbfe;border-color:var(--azul2)}
+.campo textarea{resize:vertical;min-height:95px}.campo-completo{grid-column:1/-1}
+.tabla-contenedor{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:680px}
+th{background:var(--azul);color:#fff;padding:11px;text-align:center;font-size:12px}th:first-child{text-align:left}
+td{border-bottom:1px solid var(--borde);padding:8px;font-size:13px}
+td input{width:100%;min-width:100px;padding:8px;border:1px solid #cbd5e1;border-radius:6px;text-align:right;font:inherit;background:#fff}
+.fila-total{font-weight:bold;background:#f8fafc}
+.nota{font-size:12px;color:var(--gris);margin-top:10px}
+.acciones{display:flex;justify-content:flex-end;gap:10px;margin-top:25px;flex-wrap:wrap}
+.boton-principal,.boton-secundario{border:0;border-radius:8px;padding:12px 18px;cursor:pointer;font:inherit;font-weight:bold}
+.boton-principal{background:var(--azul2);color:#fff}.boton-principal:hover{background:var(--azul)}
+.boton-secundario{background:#fff;color:var(--azul2);border:1px solid var(--borde)}
+.proximamente{background:#fff;border:1px dashed #94a3b8;border-radius:12px;padding:50px 20px;text-align:center;color:var(--gris)}
+.proximamente strong{display:block;color:var(--azul);font-size:20px;margin-bottom:10px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+.kpi{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:18px;box-shadow:0 3px 12px rgba(15,23,42,.05);min-width:0}
+.kpi .kpi-titulo{font-size:12px;font-weight:bold;color:#475569;margin-bottom:8px;text-transform:uppercase;letter-spacing:.3px}
+.kpi .kpi-valor{font-size:27px;font-weight:bold;color:var(--azul);margin-bottom:7px;overflow-wrap:anywhere}
+.kpi .kpi-texto{font-size:12px;color:var(--gris);min-height:52px}
+.estado{display:inline-block;margin-top:10px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:bold}
+.estado.verde{background:var(--verde-bg);color:var(--verde)}
+.estado.amarillo{background:var(--amarillo-bg);color:var(--amarillo)}
+.estado.rojo{background:var(--rojo-bg);color:var(--rojo)}
+details{margin-top:12px;border-top:1px solid #e5e7eb;padding-top:10px}
+summary{cursor:pointer;color:var(--azul2);font-size:12px;font-weight:bold}
+.formula{margin-top:9px;background:#f8fafc;border-left:3px solid var(--azul2);padding:10px;border-radius:5px;font-family:Consolas,monospace;font-size:12px;color:#334155;white-space:normal}
+.subtitulo{margin:28px 0 14px;color:var(--azul);font-size:18px}
+.resumen{background:#fff;border-left:5px solid var(--azul2);border-radius:10px;padding:18px 20px;margin:20px 0;box-shadow:0 3px 12px rgba(15,23,42,.04)}
+.resumen h3{color:var(--azul);margin-bottom:8px}.resumen p{font-size:13px;color:#475569}
+.aviso{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:12px 14px;border-radius:8px;font-size:12px;margin-bottom:18px;display:none}
+
+
+
+
+
+/* CAMPOS CALCULADOS DE EEFF */
+input.campo-calculado{
+  background:#eef2f7 !important;
+  color:#334155 !important;
+  font-weight:bold;
+  border-color:#cbd5e1 !important;
+  cursor:not-allowed;
+}
+
+
+
+/* MOTOR DE DIAGNÓSTICO DINÁMICO V1.1 */
+.analisis-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:18px 0}
+.analisis-card{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:18px;box-shadow:0 3px 12px rgba(15,23,42,.04)}
+.analisis-card h4{margin:0 0 10px;color:#172554;font-size:14px}
+.analisis-card p{margin:7px 0;font-size:12px;line-height:1.65;color:#475569}
+.analisis-card .recomendacion{margin-top:12px;padding:11px 12px;background:#f8fafc;border-left:4px solid #334155;border-radius:6px;color:#334155}
+.motor-box{background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;padding:18px;margin:20px 0}
+.motor-box h3{margin:0 0 8px;color:#172554}
+@media(max-width:900px){.analisis-grid{grid-template-columns:1fr}}
+
+/* PASO 6 */
+.sim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:20px}
+.resultado-inversion{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0}
+.resultado-inversion .resultado-card{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:20px;text-align:center;box-shadow:0 3px 12px rgba(15,23,42,.05)}
+.resultado-card .r-label{font-size:11px;text-transform:uppercase;color:#64748b;font-weight:bold}
+.resultado-card .r-value{font-size:29px;font-weight:bold;color:#172554;margin:7px 0}
+.decision-box{border-radius:12px;padding:20px;margin:20px 0;font-size:13px}
+.decision-positiva{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46}
+.decision-negativa{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+.decision-neutra{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.tabla-flujos{width:100%;border-collapse:collapse;font-size:11px;margin-top:14px}
+.tabla-flujos th,.tabla-flujos td{padding:9px;border-bottom:1px solid #e2e8f0;text-align:right}
+.tabla-flujos th:first-child,.tabla-flujos td:first-child{text-align:left}
+.tabla-flujos th{background:#f8fafc;color:#475569}
+.tabla-flujos input{width:95px;padding:6px;text-align:right}
+.wacc-link{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:13px;margin:14px 0;color:#1e3a8a;font-size:12px}
+@media(max-width:900px){.sim-grid,.resultado-inversion{grid-template-columns:1fr}}
+
+/* PASO 5 */
+.dashboard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}
+.dash-card{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:17px;box-shadow:0 3px 12px rgba(15,23,42,.05)}
+.dash-card .label{font-size:11px;text-transform:uppercase;font-weight:bold;color:#64748b}
+.dash-card .value{font-size:25px;font-weight:bold;color:#172554;margin:5px 0}
+.dash-card .mini{font-size:11px;color:#64748b}
+.diagnostico-box{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:22px;margin-bottom:20px;box-shadow:0 3px 12px rgba(15,23,42,.05)}
+.diagnostico-box h3{color:#172554;margin-bottom:12px}
+.diagnostico-box p{font-size:13px;color:#475569;margin-bottom:10px}
+.alt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:15px}
+.alternativa{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:20px;box-shadow:0 3px 12px rgba(15,23,42,.05);display:flex;flex-direction:column}
+.alternativa .tipo{display:inline-block;align-self:flex-start;padding:4px 8px;border-radius:999px;background:#dbeafe;color:#1e3a8a;font-size:10px;font-weight:bold;margin-bottom:10px}
+.alternativa h4{color:#172554;margin-bottom:10px;font-size:15px}
+.alternativa p{font-size:12px;color:#64748b;margin-bottom:10px}
+.alternativa .fundamento{background:#f8fafc;border-left:3px solid #1e3a8a;padding:10px;font-size:11px;color:#475569;margin-top:auto}
+.ia-panel{background:linear-gradient(135deg,#f8fafc,#eef2ff);border:1px solid #c7d2fe;border-radius:12px;padding:20px;margin:22px 0}
+.ia-panel h3{color:#172554;margin-bottom:8px}.ia-panel p{font-size:12px;color:#475569}
+.ia-badge{display:inline-block;background:#172554;color:#fff;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:bold;margin-bottom:10px}
+@media(max-width:1000px){.dashboard-grid{grid-template-columns:repeat(2,1fr)}.alt-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.dashboard-grid{grid-template-columns:1fr}}
+
+/* PASO 4 */
+.capital-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.wacc-hero{background:linear-gradient(135deg,#172554,#1e3a8a);color:#fff;border-radius:14px;padding:25px;margin:22px 0;box-shadow:0 6px 18px rgba(15,23,42,.15)}
+.wacc-hero .etiqueta{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#bfdbfe;font-weight:bold}
+.wacc-hero .numero{font-size:42px;font-weight:bold;margin:5px 0}
+.wacc-hero p{font-size:13px;color:#dbeafe;max-width:850px}
+.barra-capital{display:flex;height:28px;border-radius:8px;overflow:hidden;margin:14px 0;background:#e2e8f0}
+.barra-deuda{background:#64748b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold}
+.barra-patrimonio{background:#1e3a8a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold}
+@media(max-width:900px){.capital-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.capital-grid{grid-template-columns:1fr}}
+
+/* PASO 3 */
+.metricas-costos{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.efe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+.efe-card{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:20px;box-shadow:0 3px 12px rgba(15,23,42,.05)}
+.efe-card h4{color:var(--azul);margin-bottom:8px;font-size:14px}
+.efe-card .valor{font-size:26px;font-weight:bold;color:var(--azul2);margin-bottom:6px}
+.efe-card p{font-size:12px;color:var(--gris)}
+.tabla-efe td:nth-child(2){text-align:right;font-variant-numeric:tabular-nums}
+.positivo{color:#166534;font-weight:bold}.negativo{color:#991b1b;font-weight:bold}
+.conciliacion-ok{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534;padding:15px;border-radius:9px;font-size:13px}
+.conciliacion-error{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:15px;border-radius:9px;font-size:13px}
+.supuesto{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;padding:13px 15px;border-radius:8px;font-size:12px;margin-bottom:18px}
+@media(max-width:900px){.metricas-costos,.efe-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.metricas-costos,.efe-grid{grid-template-columns:1fr}}
+
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){
+ .grid-datos,.kpi-grid{grid-template-columns:1fr}.campo-completo{grid-column:auto}
+ header h1{font-size:20px}.titulo-paso h2{font-size:20px}
+ main{padding-left:12px;padding-right:12px}
+}
+</style>
+</head>
+<body>
+<header><div class="cabecera">
+<h1>Cuadro de Mando Integral Financiero</h1>
+<p>Diagnóstico financiero y simulación de inversión</p>
+</div></header>
+
+<nav>
+<button class="nav-btn activo" data-paso="paso1">1. Empresa</button>
+<button class="nav-btn" data-paso="paso2">2. KPIs</button>
+<button class="nav-btn" data-paso="paso3">3. Costos y EFE</button>
+<button class="nav-btn" data-paso="paso4">4. Costo de Capital</button>
+<button class="nav-btn" data-paso="paso5">5. Dashboard</button>
+<button class="nav-btn" data-paso="paso6">6. Simulación</button>
+</nav>
+
+<main>
+<section id="paso1" class="paso activo">
+<div class="titulo-paso">
+<h2>Paso 1 — Perspectiva de la empresa</h2>
+<p>Ingrese o modifique la información general y los datos base. Los valores están expresados en miles de GTQ, salvo que se indique lo contrario.</p>
+</div>
+
+<div class="tarjeta"><h3>Información general</h3>
+<div class="grid-datos">
+<div class="campo"><label>Nombre de la empresa</label><input type="text" id="empresa" value="Exportadora de Café Las Verapaces, S.A."></div>
+<div class="campo"><label>Sector</label><input type="text" id="sector" value="Agroexportador"></div>
+<div class="campo campo-completo"><label>Descripción</label><textarea id="descripcion">Empresa dedicada al cultivo, procesamiento y exportación de café de altura hacia Estados Unidos y Europa desde Alta Verapaz, Guatemala.</textarea></div>
+</div></div>
+
+<div class="tarjeta"><p class="nota"><strong>Campos grises:</strong> se calculan automáticamente a partir de las cuentas que los integran. Al modificar una cuenta base, los subtotales, totales y resultados se actualizan y alimentan los pasos siguientes.</p>
+<h3>Balance General — miles de GTQ</h3><div class="tabla-contenedor"><table>
+<thead><tr><th>Cuenta</th><th>2024</th><th>2025</th></tr></thead><tbody>
+<tr><td>Efectivo y equivalentes</td><td><input id="efectivo24" type="number" value="610"></td><td><input id="efectivo25" type="number" value="700"></td></tr>
+<tr><td>Cuentas por cobrar comerciales</td><td><input id="cxc24" type="number" value="1980"></td><td><input id="cxc25" type="number" value="2340"></td></tr>
+<tr><td>Inventarios</td><td><input id="inventario24" type="number" value="2450"></td><td><input id="inventario25" type="number" value="2890"></td></tr>
+<tr><td>Gastos pagados por anticipado</td><td><input id="anticipado24" type="number" value="85"></td><td><input id="anticipado25" type="number" value="100"></td></tr>
+<tr class="fila-total"><td>Total activo corriente</td><td><input id="activoCorriente24" type="number" value="5125" readonly class="campo-calculado"></td><td><input id="activoCorriente25" type="number" value="6030" readonly class="campo-calculado"></td></tr>
+<tr><td>Propiedad, planta y equipo, neto</td><td><input id="ppe24" type="number" value="5200"></td><td><input id="ppe25" type="number" value="5950"></td></tr>
+<tr><td>Otros activos no corrientes</td><td><input id="otrosActivos24" type="number" value="180"></td><td><input id="otrosActivos25" type="number" value="210"></td></tr>
+<tr class="fila-total"><td>Total activo</td><td><input id="activo24" type="number" value="10505" readonly class="campo-calculado"></td><td><input id="activo25" type="number" value="12190" readonly class="campo-calculado"></td></tr>
+<tr><td>Cuentas por pagar comerciales</td><td><input id="cxp24" type="number" value="1400"></td><td><input id="cxp25" type="number" value="1650"></td></tr>
+<tr><td>Porción corriente de deuda a largo plazo</td><td><input id="deudaCP24" type="number" value="380"></td><td><input id="deudaCP25" type="number" value="450"></td></tr>
+<tr><td>Impuestos por pagar</td><td><input id="impuestosPagar24" type="number" value="130"></td><td><input id="impuestosPagar25" type="number" value="155"></td></tr>
+<tr><td>Provisiones laborales</td><td><input id="provisiones24" type="number" value="95"></td><td><input id="provisiones25" type="number" value="110"></td></tr>
+<tr class="fila-total"><td>Total pasivo corriente</td><td><input id="pasivoCorriente24" type="number" value="2005" readonly class="campo-calculado"></td><td><input id="pasivoCorriente25" type="number" value="2365" readonly class="campo-calculado"></td></tr>
+<tr><td>Deuda a largo plazo</td><td><input id="deudaLP24" type="number" value="2650"></td><td><input id="deudaLP25" type="number" value="3080"></td></tr>
+<tr><td>ISR diferido</td><td><input id="isrDiferido24" type="number" value="120"></td><td><input id="isrDiferido25" type="number" value="145"></td></tr>
+<tr class="fila-total"><td>Total pasivo</td><td><input id="pasivo24" type="number" value="4775" readonly class="campo-calculado"></td><td><input id="pasivo25" type="number" value="5590" readonly class="campo-calculado"></td></tr>
+<tr><td>Capital social</td><td><input id="capital24" type="number" value="3200"></td><td><input id="capital25" type="number" value="3200"></td></tr>
+<tr><td>Reservas legales</td><td><input id="reservas24" type="number" value="300"></td><td><input id="reservas25" type="number" value="380"></td></tr>
+<tr><td>Utilidades retenidas</td><td><input id="retenidas24" type="number" value="2230"></td><td><input id="retenidas25" type="number" value="3020"></td></tr>
+<tr class="fila-total"><td>Total patrimonio</td><td><input id="patrimonio24" type="number" value="5730" readonly class="campo-calculado"></td><td><input id="patrimonio25" type="number" value="6600" readonly class="campo-calculado"></td></tr>
+</tbody></table></div></div>
+
+<div class="tarjeta"><h3>Estado de Resultados — miles de GTQ</h3><div class="tabla-contenedor"><table>
+<thead><tr><th>Cuenta</th><th>2024</th><th>2025</th></tr></thead><tbody>
+<tr><td>Ventas netas</td><td><input id="ventas24" type="number" value="16800"></td><td><input id="ventas25" type="number" value="19500"></td></tr>
+<tr><td>Costo de ventas</td><td><input id="costoVentas24" type="number" value="11900"></td><td><input id="costoVentas25" type="number" value="13650"></td></tr>
+<tr class="fila-total"><td>Utilidad bruta</td><td><input id="utilidadBruta24" type="number" value="4900" readonly class="campo-calculado"></td><td><input id="utilidadBruta25" type="number" value="5850" readonly class="campo-calculado"></td></tr>
+<tr><td>Gastos de venta y distribución</td><td><input id="gastoVenta24" type="number" value="1950"></td><td><input id="gastoVenta25" type="number" value="2280"></td></tr>
+<tr><td>Gastos de administración</td><td><input id="gastoAdmin24" type="number" value="1180"></td><td><input id="gastoAdmin25" type="number" value="1340"></td></tr>
+<tr class="fila-total"><td>Utilidad operativa (EBIT)</td><td><input id="ebit24" type="number" value="1770" readonly class="campo-calculado"></td><td><input id="ebit25" type="number" value="2230" readonly class="campo-calculado"></td></tr>
+<tr><td>Depreciación y amortización</td><td><input id="depreciacion24" type="number" value="460"></td><td><input id="depreciacion25" type="number" value="520"></td></tr>
+<tr class="fila-total"><td>EBITDA</td><td><input id="ebitda24" type="number" value="2230" readonly class="campo-calculado"></td><td><input id="ebitda25" type="number" value="2750" readonly class="campo-calculado"></td></tr>
+<tr><td>Ingresos financieros</td><td><input id="ingresosFin24" type="number" value="6"></td><td><input id="ingresosFin25" type="number" value="9"></td></tr>
+<tr><td>Gastos financieros</td><td><input id="gastosFin24" type="number" value="340"></td><td><input id="gastosFin25" type="number" value="395"></td></tr>
+<tr class="fila-total"><td>Utilidad antes de impuestos (UAI)</td><td><input id="uai24" type="number" value="1436" readonly class="campo-calculado"></td><td><input id="uai25" type="number" value="1844" readonly class="campo-calculado"></td></tr>
+<tr><td>Impuesto sobre la renta</td><td><input id="isr24" type="number" value="359"></td><td><input id="isr25" type="number" value="461"></td></tr>
+<tr class="fila-total"><td>Utilidad neta</td><td><input id="utilidadNeta24" type="number" value="1077" readonly class="campo-calculado"></td><td><input id="utilidadNeta25" type="number" value="1383" readonly class="campo-calculado"></td></tr>
+</tbody></table></div></div>
+
+<div class="tarjeta"><h3>Datos operativos 2025</h3>
+<div class="grid-datos">
+<div class="campo"><label>Embarques programados</label><input id="embarquesProgramados" type="number" value="310"></div>
+<div class="campo"><label>Embarques a tiempo y completos</label><input id="embarquesOTIF" type="number" value="254"></div>
+<div class="campo"><label>Volumen pedido por clientes (quintales)</label><input id="volumenPedido" type="number" value="48500"></div>
+<div class="campo"><label>Volumen despachado (quintales)</label><input id="volumenDespachado" type="number" value="45590"></div>
+</div>
+<p class="nota">Estos datos se utilizan para calcular OTIF y fill rate.</p>
+</div>
+
+
+<div class="motor-box">
+<h3>Análisis dinámico de los estados financieros</h3>
+<p class="nota">Se actualiza automáticamente con cada cambio. Combina análisis horizontal 2024–2025, composición de las cuentas y relaciones entre partidas sin asumir que existe un único valor “correcto” para todos los sectores.</p>
+<div class="analisis-grid">
+<div class="analisis-card"><h4>Balance General</h4><div id="aBalance">—</div></div>
+<div class="analisis-card"><h4>Estado de Resultados</h4><div id="aResultados">—</div></div>
+</div>
+</div>
+<div class="acciones"><button class="boton-principal" id="continuarPaso2">Calcular KPIs y continuar →</button></div>
+</section>
+
+<section id="paso2" class="paso">
+<div class="titulo-paso"><h2>Paso 2 — KPIs logísticos y financieros</h2>
+<p>Los indicadores se recalculan automáticamente con los datos del Paso 1. Para los indicadores que requieren saldos, se utilizan promedios 2024–2025.</p></div>
+<div id="avisoKpi" class="aviso">Revise los datos ingresados. Algún denominador es cero o existe un valor no válido.</div>
+
+<h3 class="subtitulo">Liquidez y endeudamiento</h3>
+<div class="kpi-grid">
+<div class="kpi"><div class="kpi-titulo">Razón corriente</div><div class="kpi-valor" id="kpiRazonCorriente">—</div><div class="kpi-texto" id="txtRazonCorriente"></div><span id="estRazonCorriente" class="estado"></span><details><summary>Ver cálculo</summary><div class="formula" id="formRazonCorriente"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Prueba ácida</div><div class="kpi-valor" id="kpiPruebaAcida">—</div><div class="kpi-texto" id="txtPruebaAcida"></div><span id="estPruebaAcida" class="estado"></span><details><summary>Ver cálculo</summary><div class="formula" id="formPruebaAcida"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Endeudamiento</div><div class="kpi-valor" id="kpiEndeudamiento">—</div><div class="kpi-texto" id="txtEndeudamiento"></div><span id="estEndeudamiento" class="estado"></span><details><summary>Ver cálculo</summary><div class="formula" id="formEndeudamiento"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Deuda / Patrimonio</div><div class="kpi-valor" id="kpiDeudaPatrimonio">—</div><div class="kpi-texto" id="txtDeudaPatrimonio"></div><details><summary>Ver cálculo</summary><div class="formula" id="formDeudaPatrimonio"></div></details></div>
+</div>
+
+<h3 class="subtitulo">Márgenes y rentabilidad</h3>
+<div class="kpi-grid">
+<div class="kpi"><div class="kpi-titulo">Margen bruto</div><div class="kpi-valor" id="kpiMargenBruto">—</div><div class="kpi-texto" id="txtMargenBruto"></div><details><summary>Ver cálculo</summary><div class="formula" id="formMargenBruto"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Margen operativo</div><div class="kpi-valor" id="kpiMargenOperativo">—</div><div class="kpi-texto" id="txtMargenOperativo"></div><details><summary>Ver cálculo</summary><div class="formula" id="formMargenOperativo"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Margen neto</div><div class="kpi-valor" id="kpiMargenNeto">—</div><div class="kpi-texto" id="txtMargenNeto"></div><details><summary>Ver cálculo</summary><div class="formula" id="formMargenNeto"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">ROA</div><div class="kpi-valor" id="kpiROA">—</div><div class="kpi-texto" id="txtROA"></div><details><summary>Ver cálculo</summary><div class="formula" id="formROA"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">ROE</div><div class="kpi-valor" id="kpiROE">—</div><div class="kpi-texto" id="txtROE"></div><details><summary>Ver cálculo</summary><div class="formula" id="formROE"></div></details></div>
+</div>
+
+<h3 class="subtitulo">Modelo DuPont del ROE</h3>
+<div class="kpi-grid">
+<div class="kpi"><div class="kpi-titulo">Margen neto</div><div class="kpi-valor" id="dupontMargen">—</div><div class="kpi-texto">Utilidad neta generada por cada unidad monetaria de ventas.</div></div>
+<div class="kpi"><div class="kpi-titulo">Rotación de activos</div><div class="kpi-valor" id="dupontRotActivos">—</div><div class="kpi-texto">Ventas generadas por cada unidad monetaria invertida en activos promedio.</div></div>
+<div class="kpi"><div class="kpi-titulo">Multiplicador de capital</div><div class="kpi-valor" id="dupontMultiplicador">—</div><div class="kpi-texto">Relación entre activos promedio y patrimonio promedio.</div></div>
+<div class="kpi"><div class="kpi-titulo">ROE por DuPont</div><div class="kpi-valor" id="dupontROE">—</div><div class="kpi-texto">Margen neto × rotación de activos × multiplicador de capital.</div><details><summary>Ver cálculo</summary><div class="formula" id="formDupont"></div></details></div>
+</div>
+
+<h3 class="subtitulo">Capital de trabajo y ciclo de conversión de efectivo</h3>
+<div class="kpi-grid">
+<div class="kpi"><div class="kpi-titulo">Rotación de inventario</div><div class="kpi-valor" id="kpiRotInventario">—</div><div class="kpi-texto" id="txtRotInventario"></div><details><summary>Ver cálculo</summary><div class="formula" id="formRotInventario"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">DIO</div><div class="kpi-valor" id="kpiDIO">—</div><div class="kpi-texto">Días promedio que el inventario permanece antes de convertirse en costo de ventas.</div><details><summary>Ver cálculo</summary><div class="formula" id="formDIO"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">DSO</div><div class="kpi-valor" id="kpiDSO">—</div><div class="kpi-texto">Días promedio requeridos para convertir las cuentas por cobrar en efectivo.</div><details><summary>Ver cálculo</summary><div class="formula" id="formDSO"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">DPO</div><div class="kpi-valor" id="kpiDPO">—</div><div class="kpi-texto">Días promedio de financiamiento obtenido de proveedores comerciales.</div><details><summary>Ver cálculo</summary><div class="formula" id="formDPO"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">CCC</div><div class="kpi-valor" id="kpiCCC">—</div><div class="kpi-texto" id="txtCCC"></div><details><summary>Ver cálculo</summary><div class="formula" id="formCCC"></div></details></div>
+</div>
+
+<h3 class="subtitulo">Indicadores de servicio logístico</h3>
+<div class="kpi-grid">
+<div class="kpi"><div class="kpi-titulo">OTIF</div><div class="kpi-valor" id="kpiOTIF">—</div><div class="kpi-texto" id="txtOTIF"></div><span id="estOTIF" class="estado"></span><details><summary>Ver cálculo</summary><div class="formula" id="formOTIF"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Fill rate</div><div class="kpi-valor" id="kpiFillRate">—</div><div class="kpi-texto" id="txtFillRate"></div><span id="estFillRate" class="estado"></span><details><summary>Ver cálculo</summary><div class="formula" id="formFillRate"></div></details></div>
+</div>
+
+<div class="resumen"><h3>Lectura integrada del Paso 2</h3><p id="resumenPaso2">—</p></div>
+
+<div class="motor-box">
+<h3>Interpretación financiera y logística dinámica</h3>
+<div class="analisis-grid">
+<div class="analisis-card"><h4>Liquidez</h4><div id="aLiquidez">—</div></div>
+<div class="analisis-card"><h4>Endeudamiento</h4><div id="aDeuda">—</div></div>
+<div class="analisis-card"><h4>Rentabilidad y DuPont</h4><div id="aRentabilidad">—</div></div>
+<div class="analisis-card"><h4>Capital de trabajo y servicio</h4><div id="aCapitalTrabajo">—</div></div>
+</div>
+</div>
+<div class="acciones"><button class="boton-secundario" data-ir="paso1">← Revisar datos</button><button class="boton-principal" data-ir="paso3">Continuar a Costos y EFE →</button></div>
+</section>
+
+
+<section id="paso3" class="paso">
+<div class="titulo-paso">
+<h2>Paso 3 — Costos y gestión del flujo de caja</h2>
+<p>Se reclasifican los costos 2025 para analizar margen de contribución, punto de equilibrio, margen de seguridad y GAO; después se construye el Estado de Flujo de Efectivo por el método indirecto.</p>
+</div>
+
+<div class="tarjeta">
+<h3>3.1 Estructura de costos 2025 — miles de GTQ</h3>
+<div class="supuesto"><strong>Criterio del caso:</strong> el costo de ventas (Q13,650) y Q1,200 de fletes/comisiones se tratan como variables. La porción fija de gastos de venta es Q1,080 y los gastos de administración Q1,340 se consideran fijos para el análisis costo-volumen-utilidad.</div>
+<div class="grid-datos">
+<div class="campo"><label>Costo de ventas — variable</label><input id="cvCostoVentas" type="number" value="13650"></div>
+<div class="campo"><label>Fletes y comisiones variables</label><input id="cvFletes" type="number" value="1200"></div>
+<div class="campo"><label>Gastos de venta fijos</label><input id="cfVenta" type="number" value="1080"></div>
+<div class="campo"><label>Gastos de administración — fijos</label><input id="cfAdmin" type="number" value="1340"></div>
+</div>
+<p class="nota">Los valores vienen precargados con el split proporcionado en el caso. Pueden modificarse para probar escenarios.</p>
+</div>
+
+<h3 class="subtitulo">Análisis costo-volumen-utilidad</h3>
+<div class="metricas-costos">
+<div class="kpi"><div class="kpi-titulo">Costos variables</div><div class="kpi-valor" id="p3CV">—</div><div class="kpi-texto">Costo de ventas + fletes y comisiones variables.</div><details><summary>Ver cálculo</summary><div class="formula" id="p3FormCV"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Costos fijos</div><div class="kpi-valor" id="p3CF">—</div><div class="kpi-texto">Porción fija de venta + gastos de administración.</div><details><summary>Ver cálculo</summary><div class="formula" id="p3FormCF"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Margen de contribución</div><div class="kpi-valor" id="p3MC">—</div><div class="kpi-texto" id="p3TxtMC"></div><details><summary>Ver cálculo</summary><div class="formula" id="p3FormMC"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">% margen de contribución</div><div class="kpi-valor" id="p3PctMC">—</div><div class="kpi-texto">Porcentaje de cada quetzal vendido disponible para cubrir costos fijos y generar EBIT.</div><details><summary>Ver cálculo</summary><div class="formula" id="p3FormPctMC"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Punto de equilibrio</div><div class="kpi-valor" id="p3PE">—</div><div class="kpi-texto">Nivel de ventas donde el margen de contribución cubre exactamente los costos fijos.</div><details><summary>Ver cálculo</summary><div class="formula" id="p3FormPE"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Margen de seguridad</div><div class="kpi-valor" id="p3MS">—</div><div class="kpi-texto" id="p3TxtMS"></div><details><summary>Ver cálculo</summary><div class="formula" id="p3FormMS"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">GAO</div><div class="kpi-valor" id="p3GAO">—</div><div class="kpi-texto" id="p3TxtGAO"></div><details><summary>Ver cálculo</summary><div class="formula" id="p3FormGAO"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Comprobación EBIT</div><div class="kpi-valor" id="p3EBITCalc">—</div><div class="kpi-texto">Margen de contribución menos costos fijos. Debe coincidir con el EBIT del Estado de Resultados.</div><details><summary>Ver cálculo</summary><div class="formula" id="p3FormEBIT"></div></details></div>
+</div>
+
+<div class="resumen"><h3>Lectura de costos</h3><p id="p3ResumenCostos">—</p></div>
+
+<div class="tarjeta">
+<h3>3.2 Estado de Flujo de Efectivo 2025 — método indirecto</h3>
+<div class="supuesto"><strong>Supuestos de conciliación:</strong> se considera que la depreciación/amortización 2025 (Q520) explica la reducción contable de PP&amp;E; no hubo venta de PP&amp;E. Por ello, la compra de PP&amp;E se deriva como PP&amp;E final − PP&amp;E inicial + D&amp;A. El aumento de otros activos no corrientes se presenta como inversión. El dividendo se deriva de la variación total del patrimonio: Patrimonio final = Patrimonio inicial + utilidad neta − dividendos, dado que los movimientos entre reservas y utilidades retenidas no cambian el patrimonio total.</div>
+
+<h3 class="subtitulo">Actividades de operación</h3>
+<div class="tabla-contenedor"><table class="tabla-efe">
+<thead><tr><th>Concepto</th><th>Flujo</th></tr></thead>
+<tbody>
+<tr><td>Utilidad neta</td><td id="efeUN">—</td></tr>
+<tr><td>(+) Depreciación y amortización</td><td id="efeDA">—</td></tr>
+<tr><td>(−) Aumento en cuentas por cobrar</td><td id="efeCxC">—</td></tr>
+<tr><td>(−) Aumento en inventarios</td><td id="efeInv">—</td></tr>
+<tr><td>(−) Aumento en gastos pagados por anticipado</td><td id="efeAnt">—</td></tr>
+<tr><td>(+) Aumento en cuentas por pagar comerciales</td><td id="efeCxP">—</td></tr>
+<tr><td>(+) Aumento en impuestos por pagar</td><td id="efeImp">—</td></tr>
+<tr><td>(+) Aumento en provisiones laborales</td><td id="efeProv">—</td></tr>
+<tr><td>(+) Aumento en ISR diferido</td><td id="efeISRdif">—</td></tr>
+<tr class="fila-total"><td>Flujo neto de operación (FCO)</td><td id="efeFCO">—</td></tr>
+</tbody></table></div>
+<details><summary>Ver procedimiento del flujo operativo</summary><div class="formula" id="efeFormFCO"></div></details>
+
+<h3 class="subtitulo">Actividades de inversión</h3>
+<div class="tabla-contenedor"><table class="tabla-efe">
+<thead><tr><th>Concepto</th><th>Flujo</th></tr></thead>
+<tbody>
+<tr><td>(−) Compra estimada de propiedad, planta y equipo</td><td id="efeCapex">—</td></tr>
+<tr><td>(−) Aumento de otros activos no corrientes</td><td id="efeOtrosAct">—</td></tr>
+<tr class="fila-total"><td>Flujo neto de inversión (FCI)</td><td id="efeFCI">—</td></tr>
+</tbody></table></div>
+<details><summary>Ver procedimiento del flujo de inversión</summary><div class="formula" id="efeFormFCI"></div></details>
+
+<h3 class="subtitulo">Actividades de financiamiento</h3>
+<div class="tabla-contenedor"><table class="tabla-efe">
+<thead><tr><th>Concepto</th><th>Flujo</th></tr></thead>
+<tbody>
+<tr><td>(+) Aumento neto de deuda con costo</td><td id="efeDeuda">—</td></tr>
+<tr><td>(−) Dividendos estimados pagados</td><td id="efeDividendos">—</td></tr>
+<tr class="fila-total"><td>Flujo neto de financiamiento (FCF)</td><td id="efeFCF">—</td></tr>
+</tbody></table></div>
+<details><summary>Ver procedimiento del flujo de financiamiento</summary><div class="formula" id="efeFormFCF"></div></details>
+</div>
+
+<div class="efe-grid">
+<div class="efe-card"><h4>Flujo operativo</h4><div class="valor" id="cardFCO">—</div><p>Efectivo generado por la operación después de ajustes no monetarios y capital de trabajo.</p></div>
+<div class="efe-card"><h4>Flujo de inversión</h4><div class="valor" id="cardFCI">—</div><p>Efectivo destinado principalmente a PP&amp;E y otros activos no corrientes.</p></div>
+<div class="efe-card"><h4>Flujo de financiamiento</h4><div class="valor" id="cardFCF">—</div><p>Entradas y salidas vinculadas con deuda y distribución de dividendos.</p></div>
+</div>
+
+<div id="efeConciliacion" class="conciliacion-ok">—</div>
+<details><summary>Ver conciliación completa</summary><div class="formula" id="efeFormConciliacion"></div></details>
+
+<div class="resumen"><h3>Lectura del flujo de caja</h3><p id="p3ResumenEFE">—</p></div>
+
+<div class="motor-box"><h3>Interpretación dinámica — Costos y efectivo</h3>
+<div class="analisis-grid">
+<div class="analisis-card"><h4>Estructura costo-volumen-utilidad</h4><div id="aCostos">—</div></div>
+<div class="analisis-card"><h4>Estado de Flujo de Efectivo</h4><div id="aEFE">—</div></div>
+</div></div>
+<div class="acciones"><button class="boton-secundario" data-ir="paso2">← Volver a KPIs</button><button class="boton-principal" data-ir="paso4">Continuar a Costo de Capital →</button></div>
+</section>
+
+
+<section id="paso4" class="paso">
+<div class="titulo-paso">
+<h2>Paso 4 — Estructura y costo de capital</h2>
+<p>Se calcula el costo de la deuda antes y después de impuestos, el costo del capital propio mediante CAPM ajustado por riesgo país y el WACC de la empresa.</p>
+</div>
+
+<div class="tarjeta">
+<h3>4.1 Costo de la deuda (Kd)</h3>
+<div class="supuesto"><strong>Criterio financiero:</strong> para Kd se incluye únicamente deuda con costo financiero explícito: porción corriente de deuda + deuda a largo plazo. No se incluyen cuentas por pagar comerciales. Para estimar Kd 2025 se utiliza la deuda promedio 2024–2025.</div>
+<div class="capital-grid">
+<div class="kpi"><div class="kpi-titulo">Deuda con costo 2024</div><div class="kpi-valor" id="p4Deuda24">—</div><div class="kpi-texto">Porción corriente + deuda de largo plazo.</div><details><summary>Ver cálculo</summary><div class="formula" id="p4FormD24"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Deuda con costo 2025</div><div class="kpi-valor" id="p4Deuda25">—</div><div class="kpi-texto">Saldo utilizado posteriormente como D en la estructura de capital.</div><details><summary>Ver cálculo</summary><div class="formula" id="p4FormD25"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Deuda promedio</div><div class="kpi-valor" id="p4DeudaProm">—</div><div class="kpi-texto">Promedio de deuda con costo entre 2024 y 2025.</div><details><summary>Ver cálculo</summary><div class="formula" id="p4FormDProm"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Tasa efectiva de ISR</div><div class="kpi-valor" id="p4TasaISR">—</div><div class="kpi-texto">Impuesto sobre la renta / utilidad antes de impuestos.</div><details><summary>Ver cálculo</summary><div class="formula" id="p4FormISR"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Kd antes de impuestos</div><div class="kpi-valor" id="p4KdAntes">—</div><div class="kpi-texto">Costo financiero observado sobre la deuda promedio.</div><details><summary>Ver cálculo</summary><div class="formula" id="p4FormKdAntes"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Kd después de impuestos</div><div class="kpi-valor" id="p4KdDespues">—</div><div class="kpi-texto">Costo efectivo de la deuda después de reconocer el escudo fiscal.</div><details><summary>Ver cálculo</summary><div class="formula" id="p4FormKdDespues"></div></details></div>
+</div>
+</div>
+
+<div class="tarjeta">
+<h3>4.2 Costo del capital propio (Ke) — CAPM ajustado</h3>
+<div class="grid-datos">
+<div class="campo"><label>Rf — tasa libre de riesgo (%)</label><input id="p4Rf" type="number" step="0.01" value="5.0"></div>
+<div class="campo"><label>β — beta sector agroexportador</label><input id="p4Beta" type="number" step="0.01" value="1.35"></div>
+<div class="campo"><label>Prima de riesgo de mercado (%)</label><input id="p4PRM" type="number" step="0.01" value="6.2"></div>
+<div class="campo"><label>Prima de riesgo país — Guatemala (%)</label><input id="p4Pais" type="number" step="0.01" value="2.8"></div>
+</div>
+<p class="nota">Los cuatro supuestos vienen precargados con los valores proporcionados específicamente para este caso y pueden modificarse para análisis de sensibilidad.</p>
+</div>
+
+<div class="capital-grid">
+<div class="kpi"><div class="kpi-titulo">Prima por riesgo sistemático</div><div class="kpi-valor" id="p4PrimaBeta">—</div><div class="kpi-texto">β × prima de riesgo de mercado.</div><details><summary>Ver cálculo</summary><div class="formula" id="p4FormPrimaBeta"></div></details></div>
+<div class="kpi"><div class="kpi-titulo">Ke — CAPM ajustado</div><div class="kpi-valor" id="p4Ke">—</div><div class="kpi-texto">Retorno requerido por los accionistas considerando riesgo de mercado y riesgo país.</div><details><summary>Ver cálculo</summary><div class="formula" id="p4FormKe"></div></details></div>
+</div>
+
+<div class="tarjeta">
+<h3>4.3 Estructura de capital 2025 y WACC</h3>
+<div class="supuesto"><strong>Criterio del curso:</strong> V = D + E, donde D es deuda con costo financiero y E es patrimonio. Para los pesos del WACC se utilizan los saldos 2025 de ambas fuentes.</div>
+<div class="barra-capital"><div id="barraDeuda" class="barra-deuda"></div><div id="barraPatrimonio" class="barra-patrimonio"></div></div>
+<div class="capital-grid">
+<div class="kpi"><div class="kpi-titulo">D / V</div><div class="kpi-valor" id="p4PesoD">—</div><div class="kpi-texto">Peso de la deuda con costo dentro del financiamiento considerado.</div></div>
+<div class="kpi"><div class="kpi-titulo">E / V</div><div class="kpi-valor" id="p4PesoE">—</div><div class="kpi-texto">Peso del patrimonio dentro del financiamiento considerado.</div></div>
+<div class="kpi"><div class="kpi-titulo">Aporte deuda al WACC</div><div class="kpi-valor" id="p4AporteD">—</div><div class="kpi-texto">(D/V) × Kd después de impuestos.</div></div>
+<div class="kpi"><div class="kpi-titulo">Aporte patrimonio al WACC</div><div class="kpi-valor" id="p4AporteE">—</div><div class="kpi-texto">(E/V) × Ke.</div></div>
+</div>
+
+<div class="wacc-hero">
+<div class="etiqueta">Costo promedio ponderado de capital</div>
+<div class="numero" id="p4WACC">—</div>
+<p id="p4TxtWACC">—</p>
+<details><summary style="color:#fff">Ver cálculo completo</summary><div class="formula" id="p4FormWACC" style="color:#334155"></div></details>
+</div>
+</div>
+
+<div class="resumen"><h3>Lectura financiera del Paso 4</h3><p id="p4Resumen">—</p></div>
+
+<div class="motor-box"><h3>Interpretación dinámica — Costo de capital</h3>
+<div class="analisis-card"><h4>Kd, Ke y WACC</h4><div id="aCapital">—</div></div>
+</div>
+<div class="acciones"><button class="boton-secundario" data-ir="paso3">← Volver a Costos y EFE</button><button class="boton-principal" data-ir="paso5">Continuar al Dashboard →</button></div>
+</section>
+
+
+<section id="paso5" class="paso">
+<div class="titulo-paso">
+<h2>Paso 5 — Dashboard ejecutivo y diagnóstico</h2>
+<p>Integración de los resultados financieros y logísticos obtenidos en los pasos anteriores para apoyar la toma de decisiones.</p>
+</div>
+
+<div class="ia-panel">
+<span class="ia-badge">ANÁLISIS ASISTIDO POR IA</span>
+<h3>Cómo se construyó este diagnóstico</h3>
+<p>La Inteligencia Artificial recibió como contexto los estados financieros, los KPIs calculados, el análisis costo-volumen-utilidad, el Estado de Flujo de Efectivo y el costo de capital. A partir de ese contexto se diseñaron interpretaciones y alternativas específicas para Exportadora de Café Las Verapaces, S.A. Los cálculos numéricos permanecen determinísticos y verificables en JavaScript; las reglas de actualización del diagnóstico conservan la lógica financiera del análisis cuando el usuario modifica los datos.</p>
+</div>
+
+<h3 class="subtitulo">Indicadores ejecutivos</h3>
+<div class="dashboard-grid">
+<div class="dash-card"><div class="label">Razón corriente</div><div class="value" id="dRazon">—</div><div class="mini">Liquidez de corto plazo</div></div>
+<div class="dash-card"><div class="label">ROE</div><div class="value" id="dROE">—</div><div class="mini">Rentabilidad sobre patrimonio promedio</div></div>
+<div class="dash-card"><div class="label">CCC</div><div class="value" id="dCCC">—</div><div class="mini">Capital comprometido en el ciclo operativo</div></div>
+<div class="dash-card"><div class="label">OTIF</div><div class="value" id="dOTIF">—</div><div class="mini">Embarques completos y a tiempo</div></div>
+<div class="dash-card"><div class="label">Fill rate</div><div class="value" id="dFill">—</div><div class="mini">Demanda atendida desde inventario</div></div>
+<div class="dash-card"><div class="label">Margen de seguridad</div><div class="value" id="dMS">—</div><div class="mini">Colchón antes del punto de equilibrio</div></div>
+<div class="dash-card"><div class="label">Flujo operativo</div><div class="value" id="dFCO">—</div><div class="mini">Miles de GTQ</div></div>
+<div class="dash-card"><div class="label">WACC</div><div class="value" id="dWACC">—</div><div class="mini">Referencia para creación de valor</div></div>
+</div>
+
+<div class="diagnostico-box">
+<h3>Diagnóstico financiero-logístico integrado</h3>
+<p id="dDiag1">—</p><p id="dDiag2">—</p><p id="dDiag3">—</p>
+</div>
+
+<h3 class="subtitulo">Alternativas concretas de mejora</h3>
+<div class="alt-grid">
+<div class="alternativa">
+<span class="tipo">TECNOLOGÍA · IoT</span>
+<h4>1. Sensores de humedad y temperatura en bodegas</h4>
+<p>Implementar monitoreo IoT de las condiciones de almacenamiento del café, con alertas ante desviaciones y registro histórico para apoyar control de calidad y trazabilidad.</p>
+<div class="fundamento" id="fundAlt1">—</div>
+</div>
+<div class="alternativa">
+<span class="tipo">CAPITAL DE TRABAJO</span>
+<h4>2. Programa de reducción del ciclo de efectivo</h4>
+<p>Revisar políticas de inventario y cobranza para disminuir días inmovilizados sin deteriorar el nivel de servicio. El foco debe estar en planificación de inventarios y disciplina de cobro, no simplemente en reducir stock.</p>
+<div class="fundamento" id="fundAlt2">—</div>
+</div>
+<div class="alternativa">
+<span class="tipo">OPERACIÓN · SERVICIO</span>
+<h4>3. Gestión de embarques orientada a OTIF</h4>
+<p>Establecer seguimiento de ventanas de exportación, causas de atraso y cumplimiento completo por embarque, vinculando la gestión logística con sus efectos sobre clientes, cobros y margen.</p>
+<div class="fundamento" id="fundAlt3">—</div>
+</div>
+</div>
+
+<div class="resumen"><h3>Conclusión para toma de decisiones</h3><p id="dConclusion">—</p></div>
+<div class="acciones"><button class="boton-secundario" data-ir="paso4">← Volver a Costo de Capital</button><button class="boton-principal" data-ir="paso6">Simular una inversión →</button></div>
+</section>
+
+
+<section id="paso6" class="paso">
+<div class="titulo-paso">
+<h2>Paso 6 — Simulación de inversión: sensores IoT</h2>
+<p>Evaluación financiera de la alternativa de sensores de humedad y temperatura para las bodegas de café mediante flujo de caja incremental, VPN y TIR.</p>
+</div>
+
+<div class="ia-panel">
+<span class="ia-badge">ESCENARIO BASE DEL GRUPO</span>
+<h3>Supuestos editables</h3>
+<p>Los valores siguientes son supuestos de simulación y no datos históricos de la empresa. Se precargan únicamente para construir un escenario base defendible; el usuario puede modificarlos y observar el efecto inmediato sobre los flujos, VPN y TIR.</p>
+</div>
+
+<div class="tarjeta">
+<h3>6.1 Datos del proyecto</h3>
+<div class="sim-grid">
+<div class="campo"><label>Inversión inicial (miles GTQ)</label><input id="sInversion" type="number" step="1" value="300"></div>
+<div class="campo"><label>Vida útil (años)</label><input id="sVida" type="number" min="1" max="10" step="1" value="5"></div>
+<div class="campo"><label>Valor de rescate (miles GTQ)</label><input id="sRescate" type="number" step="1" value="30"></div>
+<div class="campo"><label>Ahorro / beneficio anual inicial (miles GTQ)</label><input id="sAhorro" type="number" step="1" value="115"></div>
+<div class="campo"><label>Costo operativo anual IoT (miles GTQ)</label><input id="sCosto" type="number" step="1" value="18"></div>
+<div class="campo"><label>Crecimiento anual del beneficio (%)</label><input id="sCrecimiento" type="number" step="0.1" value="3"></div>
+<div class="campo"><label>Capital de trabajo inicial (miles GTQ)</label><input id="sCT" type="number" step="1" value="10"></div>
+<div class="campo"><label>Recuperación del capital de trabajo (%)</label><input id="sRecCT" type="number" step="1" value="100"></div>
+<div class="campo"><label>Tasa de ISR (%)</label><input id="sISR" type="number" step="0.01" value="25"></div>
+</div>
+<div class="wacc-link"><strong>Tasa de descuento:</strong> el simulador toma automáticamente el WACC calculado en el Paso 4. WACC actual = <strong id="sWACC">—</strong>. No se restan intereses en los flujos porque el costo del financiamiento ya está incorporado en esta tasa.</div>
+<div class="supuesto"><strong>Justificación del escenario:</strong> el beneficio se modela como ahorro incremental asociado a menor riesgo de deterioro/pérdidas de calidad, mejor monitoreo y trazabilidad. El costo operativo representa conectividad, plataforma y mantenimiento. Estos importes son supuestos del grupo y deben defenderse como escenario, no presentarse como datos históricos proporcionados por el caso.</div>
+</div>
+
+<div class="tarjeta">
+<h3>6.2 Construcción del flujo de caja libre</h3>
+<p class="nota">La depreciación se calcula en línea recta sobre (inversión − valor de rescate) / vida útil. Cada año: beneficio − costo operativo − depreciación = utilidad incremental antes de impuestos; se calcula ISR y luego se suma nuevamente la depreciación por ser un cargo no monetario. En el último año se incorporan valor de rescate y recuperación del capital de trabajo.</p>
+<div style="overflow-x:auto">
+<table class="tabla-flujos">
+<thead><tr><th>Concepto</th><th>Año 0</th><th>Año 1</th><th>Año 2</th><th>Año 3</th><th>Año 4</th><th>Año 5</th></tr></thead>
+<tbody id="tablaSimulacion"></tbody>
+</table>
+</div>
+</div>
+
+<div class="resultado-inversion">
+<div class="resultado-card"><div class="r-label">VPN</div><div class="r-value" id="sVPN">—</div><div class="mini">Miles de GTQ a valor presente</div></div>
+<div class="resultado-card"><div class="r-label">TIR</div><div class="r-value" id="sTIR">—</div><div class="mini">Rentabilidad interna del proyecto</div></div>
+<div class="resultado-card"><div class="r-label">WACC</div><div class="r-value" id="sWACCCard">—</div><div class="mini">Tasa mínima de referencia</div></div>
+</div>
+
+<div id="sDecision" class="decision-box">—</div>
+
+<div class="tarjeta">
+<h3>6.3 Procedimiento de evaluación</h3>
+<div class="formula" id="sFormVPN">—</div>
+<div class="formula" id="sFormTIR" style="margin-top:10px">—</div>
+</div>
+
+<div class="resumen"><h3>Lectura del escenario</h3><p id="sResumen">—</p></div>
+<div class="acciones"><button class="boton-secundario" data-ir="paso5">← Volver al Dashboard</button><button class="boton-principal" data-ir="paso1">Volver al inicio</button></div>
+</section>
+
+</main>
+
+<script>
+const botonesNavegacion=document.querySelectorAll(".nav-btn");
+const pasos=document.querySelectorAll(".paso");
+
+function mostrarPaso(idPaso){
+ recalcularEstadosFinancieros();
+ pasos.forEach(p=>p.classList.remove("activo"));
+ botonesNavegacion.forEach(b=>b.classList.remove("activo"));
+ document.getElementById(idPaso).classList.add("activo");
+ document.querySelector('[data-paso="'+idPaso+'"]').classList.add("activo");
+ if(idPaso==="paso2") calcularKPIs();
+ if(idPaso==="paso3") calcularPaso3();
+ if(idPaso==="paso4") calcularPaso4();
+ if(idPaso==="paso5") calcularPaso5();
+ if(idPaso==="paso6") calcularPaso6();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+botonesNavegacion.forEach(b=>b.addEventListener("click",()=>mostrarPaso(b.dataset.paso)));
+document.getElementById("continuarPaso2").addEventListener("click",()=>mostrarPaso("paso2"));
+document.querySelectorAll("[data-ir]").forEach(b=>b.addEventListener("click",()=>mostrarPaso(b.dataset.ir)));
+
+const n=id=>Number(document.getElementById(id).value);
+const promedio=(a,b)=>(a+b)/2;
+const fmt=(x,d=2)=>Number.isFinite(x)?x.toLocaleString("es-GT",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
+const pct=x=>Number.isFinite(x)?fmt(x*100,2)+"%":"—";
+const veces=x=>Number.isFinite(x)?fmt(x,2)+"x":"—";
+const dias=x=>Number.isFinite(x)?fmt(x,2)+" días":"—";
+const seguro=(num,den)=>den!==0?num/den:NaN;
+
+function poner(id,valor){document.getElementById(id).textContent=valor}
+function ponerHTML(id,valor){const el=document.getElementById(id); if(el) el.innerHTML=valor}
+function estado(id,texto,clase){
+ const el=document.getElementById(id); el.textContent=texto; el.className="estado "+clase;
+}
+
+function calcularKPIs(){
+ const ac25=n("activoCorriente25"), pc25=n("pasivoCorriente25"), inv25=n("inventario25");
+ const pas25=n("pasivo25"), act25=n("activo25"), pat25=n("patrimonio25");
+ const ventas25=n("ventas25"), cv25=n("costoVentas25"), ub25=n("utilidadBruta25"), ebit25=n("ebit25"), un25=n("utilidadNeta25");
+ const invProm=promedio(n("inventario24"),n("inventario25"));
+ const cxcProm=promedio(n("cxc24"),n("cxc25"));
+ const cxpProm=promedio(n("cxp24"),n("cxp25"));
+ const actProm=promedio(n("activo24"),n("activo25"));
+ const patProm=promedio(n("patrimonio24"),n("patrimonio25"));
+
+ const razon=seguro(ac25,pc25);
+ const acida=seguro(ac25-inv25,pc25);
+ const endeud=seguro(pas25,act25);
+ const deudaPat=seguro(pas25,pat25);
+ const mBruto=seguro(ub25,ventas25);
+ const mOper=seguro(ebit25,ventas25);
+ const mNeto=seguro(un25,ventas25);
+ const roa=seguro(un25,actProm);
+ const roe=seguro(un25,patProm);
+
+ const rotAct=seguro(ventas25,actProm);
+ const multCap=seguro(actProm,patProm);
+ const roeDupont=mNeto*rotAct*multCap;
+
+ const rotInv=seguro(cv25,invProm);
+ const dio=seguro(invProm,cv25)*365;
+ const dso=seguro(cxcProm,ventas25)*365;
+ const dpo=seguro(cxpProm,cv25)*365;
+ const ccc=dio+dso-dpo;
+
+ const otif=seguro(n("embarquesOTIF"),n("embarquesProgramados"));
+ const fill=seguro(n("volumenDespachado"),n("volumenPedido"));
+
+ const valores=[razon,acida,endeud,deudaPat,mBruto,mOper,mNeto,roa,roe,rotAct,multCap,roeDupont,rotInv,dio,dso,dpo,ccc,otif,fill];
+ document.getElementById("avisoKpi").style.display=valores.some(v=>!Number.isFinite(v))?"block":"none";
+
+ poner("kpiRazonCorriente",veces(razon));
+ poner("txtRazonCorriente",`Por cada Q1 de pasivo corriente, existen Q${fmt(razon)} de activo corriente.`);
+ poner("formRazonCorriente",`Activo corriente / Pasivo corriente = ${fmt(ac25,0)} / ${fmt(pc25,0)} = ${fmt(razon)}x`);
+ estado("estRazonCorriente",razon>=1.5?"Holgura de corto plazo":razon>=1?"Cobertura ajustada":"Alerta de liquidez",razon>=1.5?"verde":razon>=1?"amarillo":"rojo");
+
+ poner("kpiPruebaAcida",veces(acida));
+ poner("txtPruebaAcida",`Excluyendo inventarios, la empresa dispone de Q${fmt(acida)} por cada Q1 de pasivo corriente.`);
+ poner("formPruebaAcida",`(Activo corriente − Inventarios) / Pasivo corriente = (${fmt(ac25,0)} − ${fmt(inv25,0)}) / ${fmt(pc25,0)} = ${fmt(acida)}x`);
+ estado("estPruebaAcida",acida>=1?"Cobertura sin inventario":"Dependencia del inventario",acida>=1?"verde":"amarillo");
+
+ poner("kpiEndeudamiento",pct(endeud));
+ poner("txtEndeudamiento",`${pct(endeud)} de los activos de 2025 están financiados por pasivos.`);
+ poner("formEndeudamiento",`Pasivo total / Activo total = ${fmt(pas25,0)} / ${fmt(act25,0)} = ${pct(endeud)}`);
+ estado("estEndeudamiento",endeud<=.5?"Menos de la mitad del activo":endeud<=.65?"Apalancamiento relevante":"Apalancamiento elevado",endeud<=.5?"verde":endeud<=.65?"amarillo":"rojo");
+
+ poner("kpiDeudaPatrimonio",veces(deudaPat));
+ poner("txtDeudaPatrimonio",`Por cada Q1 de patrimonio, la empresa mantiene Q${fmt(deudaPat)} de pasivos.`);
+ poner("formDeudaPatrimonio",`Pasivo total / Patrimonio = ${fmt(pas25,0)} / ${fmt(pat25,0)} = ${fmt(deudaPat)}x`);
+
+ poner("kpiMargenBruto",pct(mBruto));
+ poner("txtMargenBruto",`Después del costo de ventas queda ${pct(mBruto)} de cada quetzal vendido.`);
+ poner("formMargenBruto",`Utilidad bruta / Ventas = ${fmt(ub25,0)} / ${fmt(ventas25,0)} = ${pct(mBruto)}`);
+
+ poner("kpiMargenOperativo",pct(mOper));
+ poner("txtMargenOperativo",`La operación genera ${pct(mOper)} de EBIT sobre las ventas.`);
+ poner("formMargenOperativo",`EBIT / Ventas = ${fmt(ebit25,0)} / ${fmt(ventas25,0)} = ${pct(mOper)}`);
+
+ poner("kpiMargenNeto",pct(mNeto));
+ poner("txtMargenNeto",`La utilidad neta representa ${pct(mNeto)} de las ventas de 2025.`);
+ poner("formMargenNeto",`Utilidad neta / Ventas = ${fmt(un25,0)} / ${fmt(ventas25,0)} = ${pct(mNeto)}`);
+
+ poner("kpiROA",pct(roa));
+ poner("txtROA",`La utilidad neta equivale a ${pct(roa)} de los activos promedio 2024–2025.`);
+ poner("formROA",`Utilidad neta / Activo promedio = ${fmt(un25,0)} / [(${fmt(n("activo24"),0)} + ${fmt(n("activo25"),0)}) / 2] = ${pct(roa)}`);
+
+ poner("kpiROE",pct(roe));
+ poner("txtROE",`La utilidad neta equivale a ${pct(roe)} del patrimonio promedio 2024–2025.`);
+ poner("formROE",`Utilidad neta / Patrimonio promedio = ${fmt(un25,0)} / [(${fmt(n("patrimonio24"),0)} + ${fmt(n("patrimonio25"),0)}) / 2] = ${pct(roe)}`);
+
+ poner("dupontMargen",pct(mNeto)); poner("dupontRotActivos",veces(rotAct)); poner("dupontMultiplicador",veces(multCap)); poner("dupontROE",pct(roeDupont));
+ poner("formDupont",`${pct(mNeto)} × ${fmt(rotAct)}x × ${fmt(multCap)}x = ${pct(roeDupont)}. Debe coincidir con el ROE calculado con patrimonio promedio.`);
+
+ poner("kpiRotInventario",veces(rotInv));
+ poner("txtRotInventario",`El inventario promedio se convierte en costo de ventas aproximadamente ${fmt(rotInv)} veces al año.`);
+ poner("formRotInventario",`Costo de ventas / Inventario promedio = ${fmt(cv25,0)} / [(${fmt(n("inventario24"),0)} + ${fmt(n("inventario25"),0)}) / 2] = ${fmt(rotInv)}x`);
+
+ poner("kpiDIO",dias(dio));
+ poner("formDIO",`Inventario promedio / Costo de ventas × 365 = ${fmt(invProm,0)} / ${fmt(cv25,0)} × 365 = ${fmt(dio)} días`);
+ poner("kpiDSO",dias(dso));
+ poner("formDSO",`CxC promedio / Ventas × 365 = ${fmt(cxcProm,0)} / ${fmt(ventas25,0)} × 365 = ${fmt(dso)} días`);
+ poner("kpiDPO",dias(dpo));
+ poner("formDPO",`CxP promedio / Costo de ventas × 365 = ${fmt(cxpProm,0)} / ${fmt(cv25,0)} × 365 = ${fmt(dpo)} días`);
+ poner("kpiCCC",dias(ccc));
+ poner("txtCCC",`El efectivo permanece comprometido aproximadamente ${fmt(ccc)} días desde el pago asociado al ciclo operativo hasta su recuperación.`);
+ poner("formCCC",`DIO + DSO − DPO = ${fmt(dio)} + ${fmt(dso)} − ${fmt(dpo)} = ${fmt(ccc)} días`);
+
+ poner("kpiOTIF",pct(otif));
+ poner("txtOTIF",`${fmt(n("embarquesOTIF"),0)} de ${fmt(n("embarquesProgramados"),0)} embarques se realizaron completos y dentro de la ventana pactada.`);
+ poner("formOTIF",`Embarques a tiempo y completos / Embarques programados = ${fmt(n("embarquesOTIF"),0)} / ${fmt(n("embarquesProgramados"),0)} = ${pct(otif)}`);
+ estado("estOTIF",otif>=.95?"Servicio alto":otif>=.90?"Servicio mejorable":"Brecha de servicio",otif>=.95?"verde":otif>=.90?"amarillo":"rojo");
+
+ poner("kpiFillRate",pct(fill));
+ poner("txtFillRate",`${fmt(n("volumenDespachado"),0)} de ${fmt(n("volumenPedido"),0)} quintales solicitados pudieron despacharse desde inventario disponible.`);
+ poner("formFillRate",`Volumen despachado / Volumen pedido = ${fmt(n("volumenDespachado"),0)} / ${fmt(n("volumenPedido"),0)} = ${pct(fill)}`);
+ estado("estFillRate",fill>=.95?"Cobertura alta":fill>=.90?"Cobertura cercana a 95%":"Brecha de disponibilidad",fill>=.95?"verde":fill>=.90?"amarillo":"rojo");
+
+ const resumen=`En 2025, la empresa presenta una razón corriente de ${fmt(razon)}x y una prueba ácida de ${fmt(acida)}x. Su margen neto es ${pct(mNeto)}, con ROA de ${pct(roa)} y ROE de ${pct(roe)} usando saldos promedio. El ciclo de conversión de efectivo es de aproximadamente ${fmt(ccc)} días: ${fmt(dio)} días de inventario + ${fmt(dso)} días de cobro − ${fmt(dpo)} días de pago. En servicio logístico, el OTIF alcanza ${pct(otif)} y el fill rate ${pct(fill)}. Estos resultados muestran que el análisis financiero debe leerse junto con la presión de capital de trabajo y el cumplimiento de embarques.`;
+ poner("resumenPaso2",resumen);
+}
+
+
+function q(x){return "Q "+fmt(x,2)}
+function flujoFmt(x){return (x>=0?"+ ":"− ")+"Q "+fmt(Math.abs(x),2)}
+function claseFlujo(id,x){
+ const el=document.getElementById(id);
+ el.classList.remove("positivo","negativo");
+ el.classList.add(x>=0?"positivo":"negativo");
+}
+
+function calcularPaso3(){
+ const ventas=n("ventas25"), ebit=n("ebit25");
+ const cv1=n("cvCostoVentas"), cv2=n("cvFletes"), cf1=n("cfVenta"), cf2=n("cfAdmin");
+ const cv=cv1+cv2, cf=cf1+cf2, mc=ventas-cv, pctMC=seguro(mc,ventas);
+ const pe=seguro(cf,pctMC);
+ const msValor=ventas-pe, msPct=seguro(msValor,ventas);
+ const gao=seguro(mc,ebit), ebitCalc=mc-cf;
+
+ poner("p3CV",q(cv)); poner("p3CF",q(cf)); poner("p3MC",q(mc)); poner("p3PctMC",pct(pctMC));
+ poner("p3PE",q(pe)); poner("p3MS",pct(msPct)); poner("p3GAO",veces(gao)); poner("p3EBITCalc",q(ebitCalc));
+ poner("p3TxtMC",`De las ventas 2025, Q${fmt(mc)} mil quedan para cubrir costos fijos y luego generar utilidad operativa.`);
+ poner("p3TxtMS",`Las ventas podrían caer aproximadamente ${pct(msPct)} antes de alcanzar el punto de equilibrio, manteniendo la estructura de costos analizada.`);
+ poner("p3TxtGAO",`Con un GAO de ${fmt(gao)}x, un cambio de 1% en ventas produciría aproximadamente un cambio de ${fmt(gao)}% en EBIT, cerca del nivel actual de operación.`);
+ poner("p3FormCV",`${fmt(cv1,0)} + ${fmt(cv2,0)} = Q${fmt(cv,0)} mil`);
+ poner("p3FormCF",`${fmt(cf1,0)} + ${fmt(cf2,0)} = Q${fmt(cf,0)} mil`);
+ poner("p3FormMC",`Ventas − Costos variables = ${fmt(ventas,0)} − ${fmt(cv,0)} = Q${fmt(mc,0)} mil`);
+ poner("p3FormPctMC",`Margen de contribución / Ventas = ${fmt(mc,0)} / ${fmt(ventas,0)} = ${pct(pctMC)}`);
+ poner("p3FormPE",`Costos fijos / % margen de contribución = ${fmt(cf,0)} / ${fmt(pctMC,4)} = Q${fmt(pe,2)} mil`);
+ poner("p3FormMS",`(Ventas − Punto de equilibrio) / Ventas = (${fmt(ventas,0)} − ${fmt(pe,2)}) / ${fmt(ventas,0)} = ${pct(msPct)}. En valor: Q${fmt(msValor,2)} mil.`);
+ poner("p3FormGAO",`Margen de contribución / EBIT = ${fmt(mc,0)} / ${fmt(ebit,0)} = ${fmt(gao)}x`);
+ poner("p3FormEBIT",`Margen de contribución − Costos fijos = ${fmt(mc,0)} − ${fmt(cf,0)} = Q${fmt(ebitCalc,0)} mil. EBIT reportado = Q${fmt(ebit,0)} mil.`);
+ poner("p3ResumenCostos",`La empresa genera un margen de contribución de ${pct(pctMC)}. Con costos fijos de Q${fmt(cf,0)} mil, su punto de equilibrio se ubica en aproximadamente Q${fmt(pe,2)} mil de ventas. Frente a ventas de Q${fmt(ventas,0)} mil, el margen de seguridad es ${pct(msPct)} y el GAO es ${fmt(gao)}x. Esto indica cuánto colchón existe antes de entrar en pérdida operativa y cuánto se amplifican los cambios en ventas sobre el EBIT.`);
+
+ // EFE: método indirecto
+ const un=n("utilidadNeta25"), da=n("depreciacion25");
+ const dCxC=n("cxc25")-n("cxc24");
+ const dInv=n("inventario25")-n("inventario24");
+ const dAnt=n("anticipado25")-n("anticipado24");
+ const dCxP=n("cxp25")-n("cxp24");
+ const dImp=n("impuestosPagar25")-n("impuestosPagar24");
+ const dProv=n("provisiones25")-n("provisiones24");
+ const dISRdif=n("isrDiferido25")-n("isrDiferido24");
+ const fco=un+da-dCxC-dInv-dAnt+dCxP+dImp+dProv+dISRdif;
+
+ const capex=n("ppe25")-n("ppe24")+da;
+ const dOtros=n("otrosActivos25")-n("otrosActivos24");
+ const fci=-capex-dOtros;
+
+ const deuda24=n("deudaCP24")+n("deudaLP24");
+ const deuda25=n("deudaCP25")+n("deudaLP25");
+ const dDeuda=deuda25-deuda24;
+ const dividendos=n("patrimonio24")+un-n("patrimonio25");
+ const fcf=dDeuda-dividendos;
+
+ const deltaCalc=fco+fci+fcf;
+ const deltaReal=n("efectivo25")-n("efectivo24");
+ const diferencia=deltaCalc-deltaReal;
+
+ const filas={
+  efeUN:un,efeDA:da,efeCxC:-dCxC,efeInv:-dInv,efeAnt:-dAnt,efeCxP:dCxP,efeImp:dImp,efeProv:dProv,efeISRdif:dISRdif,
+  efeFCO:fco,efeCapex:-capex,efeOtrosAct:-dOtros,efeFCI:fci,efeDeuda:dDeuda,efeDividendos:-dividendos,efeFCF:fcf
+ };
+ Object.entries(filas).forEach(([id,v])=>{poner(id,flujoFmt(v));claseFlujo(id,v)});
+
+ poner("cardFCO",flujoFmt(fco)); poner("cardFCI",flujoFmt(fci)); poner("cardFCF",flujoFmt(fcf));
+ claseFlujo("cardFCO",fco); claseFlujo("cardFCI",fci); claseFlujo("cardFCF",fcf);
+
+ poner("efeFormFCO",`Utilidad neta + D&A − ΔCxC − ΔInventarios − ΔAnticipados + ΔCxP + ΔImpuestos por pagar + ΔProvisiones + ΔISR diferido = ${fmt(un,0)} + ${fmt(da,0)} − ${fmt(dCxC,0)} − ${fmt(dInv,0)} − ${fmt(dAnt,0)} + ${fmt(dCxP,0)} + ${fmt(dImp,0)} + ${fmt(dProv,0)} + ${fmt(dISRdif,0)} = Q${fmt(fco,0)} mil.`);
+ poner("efeFormFCI",`Compra estimada de PP&E = PP&E final − PP&E inicial + D&A = ${fmt(n("ppe25"),0)} − ${fmt(n("ppe24"),0)} + ${fmt(da,0)} = Q${fmt(capex,0)} mil. Aumento de otros activos no corrientes = ${fmt(n("otrosActivos25"),0)} − ${fmt(n("otrosActivos24"),0)} = Q${fmt(dOtros,0)} mil. FCI = −${fmt(capex,0)} − ${fmt(dOtros,0)} = −Q${fmt(Math.abs(fci),0)} mil.`);
+ poner("efeFormFCF",`Deuda con costo 2024 = ${fmt(deuda24,0)}; deuda con costo 2025 = ${fmt(deuda25,0)}; aumento neto = Q${fmt(dDeuda,0)} mil. Dividendos derivados = Patrimonio inicial + Utilidad neta − Patrimonio final = ${fmt(n("patrimonio24"),0)} + ${fmt(un,0)} − ${fmt(n("patrimonio25"),0)} = Q${fmt(dividendos,0)} mil. FCF = ${fmt(dDeuda,0)} − ${fmt(dividendos,0)} = ${flujoFmt(fcf)} mil.`);
+
+ const conc=document.getElementById("efeConciliacion");
+ const ok=Math.abs(diferencia)<0.01;
+ conc.className=ok?"conciliacion-ok":"conciliacion-error";
+ conc.innerHTML=ok
+  ? `<strong>✓ EFE conciliado.</strong> FCO (${flujoFmt(fco)}) + FCI (${flujoFmt(fci)}) + FCF (${flujoFmt(fcf)}) = ${flujoFmt(deltaCalc)} mil, exactamente igual al cambio real de efectivo de Q${fmt(n("efectivo24"),0)} mil a Q${fmt(n("efectivo25"),0)} mil.`
+  : `<strong>⚠ El EFE no concilia.</strong> La variación calculada es ${flujoFmt(deltaCalc)} mil y la variación real es ${flujoFmt(deltaReal)} mil. Diferencia: ${flujoFmt(diferencia)} mil.`;
+ poner("efeFormConciliacion",`FCO + FCI + FCF = ${fmt(fco,0)} + (${fmt(fci,0)}) + (${fmt(fcf,0)}) = Q${fmt(deltaCalc,0)} mil. Cambio real en efectivo = Efectivo 2025 − Efectivo 2024 = ${fmt(n("efectivo25"),0)} − ${fmt(n("efectivo24"),0)} = Q${fmt(deltaReal,0)} mil. Diferencia de conciliación = Q${fmt(diferencia,2)} mil.`);
+
+ poner("p3ResumenEFE",`La operación generó Q${fmt(fco,0)} mil de efectivo, aun después de absorber aumentos de Q${fmt(dCxC,0)} mil en cuentas por cobrar y Q${fmt(dInv,0)} mil en inventarios. La empresa destinó aproximadamente Q${fmt(Math.abs(fci),0)} mil a inversión y obtuvo Q${fmt(dDeuda,0)} mil adicionales de deuda con costo. Tras considerar dividendos estimados por Q${fmt(dividendos,0)} mil, el efectivo aumentó Q${fmt(deltaReal,0)} mil. La lectura conjunta muestra una operación generadora de caja, pero con una demanda importante de inversión y capital de trabajo.`);
+}
+
+["cvCostoVentas","cvFletes","cfVenta","cfAdmin"].forEach(id=>document.getElementById(id).addEventListener("input",calcularPaso3));
+document.querySelectorAll('#paso1 input[type="number"]').forEach(el=>el.addEventListener("input",calcularPaso3));
+
+
+function calcularPaso4(){
+ const d24=n("deudaCP24")+n("deudaLP24");
+ const d25=n("deudaCP25")+n("deudaLP25");
+ const dProm=(d24+d25)/2;
+ const gastosFin=n("gastosFin25");
+ const tasaISR=seguro(n("isr25"),n("uai25"));
+ const kdAntes=seguro(gastosFin,dProm);
+ const kdDespues=kdAntes*(1-tasaISR);
+
+ const rf=n("p4Rf")/100;
+ const beta=n("p4Beta");
+ const prm=n("p4PRM")/100;
+ const pais=n("p4Pais")/100;
+ const primaBeta=beta*prm;
+ const ke=rf+primaBeta+pais;
+
+ const E=n("patrimonio25"), D=d25, V=D+E;
+ const pesoD=seguro(D,V), pesoE=seguro(E,V);
+ const aporteD=pesoD*kdDespues, aporteE=pesoE*ke;
+ const wacc=aporteD+aporteE;
+
+ poner("p4Deuda24",q(d24)); poner("p4Deuda25",q(d25)); poner("p4DeudaProm",q(dProm));
+ poner("p4TasaISR",pct(tasaISR)); poner("p4KdAntes",pct(kdAntes)); poner("p4KdDespues",pct(kdDespues));
+ poner("p4FormD24",`Porción corriente + deuda LP = ${fmt(n("deudaCP24"),0)} + ${fmt(n("deudaLP24"),0)} = Q${fmt(d24,0)} mil`);
+ poner("p4FormD25",`Porción corriente + deuda LP = ${fmt(n("deudaCP25"),0)} + ${fmt(n("deudaLP25"),0)} = Q${fmt(d25,0)} mil`);
+ poner("p4FormDProm",`(Deuda 2024 + Deuda 2025) / 2 = (${fmt(d24,0)} + ${fmt(d25,0)}) / 2 = Q${fmt(dProm,0)} mil`);
+ poner("p4FormISR",`ISR / UAI = ${fmt(n("isr25"),0)} / ${fmt(n("uai25"),0)} = ${pct(tasaISR)}`);
+ poner("p4FormKdAntes",`Gastos financieros / Deuda promedio = ${fmt(gastosFin,0)} / ${fmt(dProm,0)} = ${pct(kdAntes)}`);
+ poner("p4FormKdDespues",`Kd × (1 − T) = ${pct(kdAntes)} × (1 − ${pct(tasaISR)}) = ${pct(kdDespues)}`);
+
+ poner("p4PrimaBeta",pct(primaBeta)); poner("p4Ke",pct(ke));
+ poner("p4FormPrimaBeta",`β × (Rm − Rf) = ${fmt(beta,2)} × ${fmt(prm*100,2)}% = ${pct(primaBeta)}`);
+ poner("p4FormKe",`Ke = Rf + β(Rm − Rf) + Prima país = ${fmt(rf*100,2)}% + (${fmt(beta,2)} × ${fmt(prm*100,2)}%) + ${fmt(pais*100,2)}% = ${pct(ke)}`);
+
+ poner("p4PesoD",pct(pesoD)); poner("p4PesoE",pct(pesoE));
+ poner("p4AporteD",pct(aporteD)); poner("p4AporteE",pct(aporteE)); poner("p4WACC",pct(wacc));
+ document.getElementById("barraDeuda").style.width=(pesoD*100)+"%";
+ document.getElementById("barraPatrimonio").style.width=(pesoE*100)+"%";
+ document.getElementById("barraDeuda").textContent="Deuda "+pct(pesoD);
+ document.getElementById("barraPatrimonio").textContent="Patrimonio "+pct(pesoE);
+
+ poner("p4TxtWACC",`Con la estructura financiera 2025, el costo promedio ponderado del capital es ${pct(wacc)}. Este valor servirá como referencia de tasa de descuento para evaluar la inversión del Paso 6.`);
+ poner("p4FormWACC",`WACC = (E/V × Ke) + (D/V × Kd después de impuestos) = (${pct(pesoE)} × ${pct(ke)}) + (${pct(pesoD)} × ${pct(kdDespues)}) = ${pct(aporteE)} + ${pct(aporteD)} = ${pct(wacc)}`);
+ poner("p4Resumen",`La deuda con costo promedio asciende a Q${fmt(dProm,0)} mil y presenta un Kd antes de impuestos de ${pct(kdAntes)}. Con una tasa efectiva de ISR de ${pct(tasaISR)}, el escudo fiscal reduce ese costo a ${pct(kdDespues)}. El CAPM ajustado por riesgo país estima un Ke de ${pct(ke)}. En 2025, la estructura considerada para WACC está compuesta por ${pct(pesoD)} de deuda con costo y ${pct(pesoE)} de patrimonio, produciendo un WACC de ${pct(wacc)}. Este WACC es la referencia financiera que se trasladará a la evaluación VPN/TIR del proyecto.`);
+ window.waccActual=wacc;
+}
+
+["p4Rf","p4Beta","p4PRM","p4Pais"].forEach(id=>document.getElementById(id).addEventListener("input",calcularPaso4));
+document.querySelectorAll('#paso1 input[type="number"]').forEach(el=>el.addEventListener("input",calcularPaso4));
+
+
+function calcularPaso5(){
+ const ac=n("activoCorriente25"), pc=n("pasivoCorriente25");
+ const razon=seguro(ac,pc);
+ const actProm=promedio(n("activo24"),n("activo25"));
+ const patProm=promedio(n("patrimonio24"),n("patrimonio25"));
+ const roe=seguro(n("utilidadNeta25"),patProm);
+ const invProm=promedio(n("inventario24"),n("inventario25"));
+ const cxcProm=promedio(n("cxc24"),n("cxc25"));
+ const cxpProm=promedio(n("cxp24"),n("cxp25"));
+ const dio=seguro(invProm,n("costoVentas25"))*365;
+ const dso=seguro(cxcProm,n("ventas25"))*365;
+ const dpo=seguro(cxpProm,n("costoVentas25"))*365;
+ const ccc=dio+dso-dpo;
+ const otif=seguro(n("embarquesOTIF"),n("embarquesProgramados"));
+ const fill=seguro(n("volumenDespachado"),n("volumenPedido"));
+
+ const ventas=n("ventas25"), cv=n("cvCostoVentas")+n("cvFletes"), cf=n("cfVenta")+n("cfAdmin");
+ const mc=ventas-cv, pctMC=seguro(mc,ventas), pe=seguro(cf,pctMC), ms=seguro(ventas-pe,ventas);
+
+ const un=n("utilidadNeta25"), da=n("depreciacion25");
+ const fco=un+da-(n("cxc25")-n("cxc24"))-(n("inventario25")-n("inventario24"))-(n("anticipado25")-n("anticipado24"))+(n("cxp25")-n("cxp24"))+(n("impuestosPagar25")-n("impuestosPagar24"))+(n("provisiones25")-n("provisiones24"))+(n("isrDiferido25")-n("isrDiferido24"));
+
+ calcularPaso4();
+ const wacc=window.waccActual;
+
+ poner("dRazon",veces(razon)); poner("dROE",pct(roe)); poner("dCCC",dias(ccc)); poner("dOTIF",pct(otif));
+ poner("dFill",pct(fill)); poner("dMS",pct(ms)); poner("dFCO",q(fco)); poner("dWACC",pct(wacc));
+
+ const liquidez=razon>=1.5
+  ? `La empresa presenta cobertura de corto plazo con una razón corriente de ${fmt(razon)}x. Sin embargo, la liquidez contable debe analizarse junto con la velocidad de recuperación del capital de trabajo.`
+  : `La razón corriente de ${fmt(razon)}x muestra una cobertura de corto plazo que requiere atención, especialmente por la estacionalidad del negocio.`;
+ const ciclo=`El ciclo de conversión de efectivo es de ${fmt(ccc)} días, compuesto por ${fmt(dio)} días de inventario, ${fmt(dso)} días de cobro y ${fmt(dpo)} días de pago. Esto evidencia que una parte relevante de los recursos permanece comprometida en inventario y cuentas por cobrar antes de regresar a caja.`;
+ const servicio=`El OTIF de ${pct(otif)} contrasta con un fill rate de ${pct(fill)}. ${otif<.90?"La principal señal operativa está en el cumplimiento completo y oportuno de los embarques, no únicamente en la disponibilidad del producto.":"El cumplimiento de embarques se encuentra en un nivel relativamente sólido, aunque debe vigilarse junto con la disponibilidad de inventario."} El flujo operativo de Q${fmt(fco,0)} mil confirma que la operación genera efectivo, mientras que el WACC de ${pct(wacc)} establece la referencia mínima para evaluar nuevas inversiones.`;
+ poner("dDiag1",liquidez); poner("dDiag2",ciclo); poner("dDiag3",servicio);
+
+ poner("fundAlt1",`Fundamento: el caso identifica riesgo de almacenamiento y considera sensores de humedad/temperatura. La propuesta conecta IoT con protección del inventario, que permanece aproximadamente ${fmt(dio)} días en la operación. Su conveniencia económica se evaluará en el Paso 6 contra un WACC de ${pct(wacc)}.`);
+ poner("fundAlt2",`Fundamento: el CCC actual es ${fmt(ccc)} días. Reducir DIO y/o DSO liberaría capital de trabajo; el análisis debe preservar el fill rate actual de ${pct(fill)} para evitar mejorar caja a costa del servicio.`);
+ poner("fundAlt3",`Fundamento: solo ${pct(otif)} de los embarques programados cumplen simultáneamente tiempo y completitud. Mejorar este KPI puede reducir incidencias comerciales y proteger la relación entre servicio, cobro y margen.`);
+
+ const conclusion=`La prioridad no surge de un único indicador. La empresa combina rentabilidad sobre patrimonio de ${pct(roe)}, generación operativa de caja y liquidez contable, pero mantiene un ciclo de efectivo de ${fmt(ccc)} días y una brecha de servicio reflejada en OTIF. Por ello, las alternativas propuestas atacan tres frentes distintos: protección tecnológica del inventario, eficiencia del capital de trabajo y confiabilidad de los embarques. La inversión tecnológica será sometida a VPN y TIR en el siguiente paso antes de concluir si crea valor.`;
+ poner("dConclusion",conclusion);
+}
+document.querySelectorAll('#paso1 input[type="number"], #paso3 input[type="number"], #paso4 input[type="number"]').forEach(el=>el.addEventListener("input",calcularPaso5));
+
+document.querySelectorAll('#paso1 input[type="number"]').forEach(el=>el.addEventListener("input",calcularKPIs));
+
+function setNum(id,valor){
+ const el=document.getElementById(id);
+ if(el) el.value=Number.isFinite(valor)?Number(valor.toFixed(6)):0;
+}
+
+function recalcularEstadosFinancieros(){
+ ["24","25"].forEach(y=>{
+   // Balance General
+   const activoCorriente =
+     n("efectivo"+y)+n("cxc"+y)+n("inventario"+y)+n("anticipado"+y);
+   setNum("activoCorriente"+y, activoCorriente);
+
+   const activoTotal =
+     activoCorriente+n("ppe"+y)+n("otrosActivos"+y);
+   setNum("activo"+y, activoTotal);
+
+   const pasivoCorriente =
+     n("cxp"+y)+n("deudaCP"+y)+n("impuestosPagar"+y)+n("provisiones"+y);
+   setNum("pasivoCorriente"+y, pasivoCorriente);
+
+   const pasivoTotal =
+     pasivoCorriente+n("deudaLP"+y)+n("isrDiferido"+y);
+   setNum("pasivo"+y, pasivoTotal);
+
+   const patrimonioTotal =
+     n("capital"+y)+n("reservas"+y)+n("retenidas"+y);
+   setNum("patrimonio"+y, patrimonioTotal);
+
+   // Estado de Resultados
+   const utilidadBruta = n("ventas"+y)-n("costoVentas"+y);
+   setNum("utilidadBruta"+y, utilidadBruta);
+
+   const ebit = utilidadBruta-n("gastoVenta"+y)-n("gastoAdmin"+y);
+   setNum("ebit"+y, ebit);
+
+   const ebitda = ebit+n("depreciacion"+y);
+   setNum("ebitda"+y, ebitda);
+
+   const uai = ebit+n("ingresosFin"+y)-n("gastosFin"+y);
+   setNum("uai"+y, uai);
+
+   const utilidadNeta = uai-n("isr"+y);
+   setNum("utilidadNeta"+y, utilidadNeta);
+ });
+}
+
+
+function vpnFlujos(flujos,tasa){
+ return flujos.reduce((acc,fc,t)=>acc+fc/Math.pow(1+tasa,t),0);
+}
+function tirFlujos(flujos){
+ // Busca una raíz económica en el intervalo -99.9% a 1000%.
+ let low=-0.999, high=10;
+ let fLow=vpnFlujos(flujos,low), fHigh=vpnFlujos(flujos,high);
+ if(!Number.isFinite(fLow)||!Number.isFinite(fHigh)||fLow*fHigh>0) return null;
+ for(let i=0;i<200;i++){
+   const mid=(low+high)/2, fMid=vpnFlujos(flujos,mid);
+   if(Math.abs(fMid)<1e-9) return mid;
+   if(fLow*fMid<=0){high=mid;fHigh=fMid;}else{low=mid;fLow=fMid;}
+ }
+ return (low+high)/2;
+}
+function filaSim(nombre,valores,dec=1){
+ return `<tr><td>${nombre}</td>${valores.map(v=>`<td>${v===null?"—":fmt(v,dec)}</td>`).join("")}</tr>`;
+}
+function calcularPaso6(){
+ calcularPaso4();
+ const inversion=Math.max(0,n("sInversion"));
+ const vida=Math.max(1,Math.min(5,Math.round(n("sVida")||5)));
+ const rescate=Math.max(0,n("sRescate"));
+ const ahorro=n("sAhorro"), costo=n("sCosto"), crecimiento=n("sCrecimiento")/100;
+ const ct=Math.max(0,n("sCT")), recCT=Math.max(0,n("sRecCT"))/100, tasaISR=Math.max(0,n("sISR"))/100;
+ const wacc=window.waccActual||0;
+ const dep=Math.max(0,(inversion-rescate)/vida);
+
+ let beneficios=[null], costos=[null], deps=[null], uai=[null], impuestos=[null], flujos=[-(inversion+ct)];
+ for(let y=1;y<=5;y++){
+   if(y<=vida){
+     const ben=ahorro*Math.pow(1+crecimiento,y-1);
+     const c=costo;
+     const d=dep;
+     const utilidad=ben-c-d;
+     // El escudo fiscal solo se reconoce sobre utilidad incremental positiva en este modelo simplificado.
+     const imp=Math.max(0,utilidad*tasaISR);
+     let fc=utilidad-imp+d;
+     if(y===vida) fc+=rescate+ct*recCT;
+     beneficios.push(ben); costos.push(c); deps.push(d); uai.push(utilidad); impuestos.push(imp); flujos.push(fc);
+   }else{
+     beneficios.push(0); costos.push(0); deps.push(0); uai.push(0); impuestos.push(0); flujos.push(0);
+   }
+ }
+ const vpn=vpnFlujos(flujos,wacc);
+ const tir=tirFlujos(flujos);
+ const factores=flujos.map((_,t)=>1/Math.pow(1+wacc,t));
+ const vp=flujos.map((fc,t)=>fc*factores[t]);
+
+ document.getElementById("tablaSimulacion").innerHTML=
+   filaSim("Beneficio / ahorro incremental",[null,...beneficios.slice(1)])+
+   filaSim("(−) Costo operativo",[null,...costos.slice(1)])+
+   filaSim("(−) Depreciación",[null,...deps.slice(1)])+
+   filaSim("= UAI incremental",[null,...uai.slice(1)])+
+   filaSim("(−) ISR",[null,...impuestos.slice(1)])+
+   filaSim("Flujo de caja libre",flujos)+
+   filaSim("Factor de descuento",factores,4)+
+   filaSim("Valor presente",vp);
+
+ poner("sWACC",pct(wacc)); poner("sWACCCard",pct(wacc)); poner("sVPN",q(vpn));
+ poner("sTIR",tir===null?"No determinada":pct(tir));
+
+ const decision=document.getElementById("sDecision");
+ decision.className="decision-box "+(vpn>0.005?"decision-positiva":vpn<-0.005?"decision-negativa":"decision-neutra");
+ if(vpn>0.005){
+   decision.innerHTML=`<strong>El escenario crea valor.</strong> El VPN es positivo en Q${fmt(vpn,1)} mil. ${tir!==null?`La TIR de ${pct(tir)} se compara con el WACC de ${pct(wacc)}.`:""} Bajo estos supuestos, los flujos descontados superan el desembolso inicial.`;
+ }else if(vpn<-0.005){
+   decision.innerHTML=`<strong>El escenario destruye valor.</strong> El VPN es negativo en Q${fmt(Math.abs(vpn),1)} mil. ${tir!==null?`La TIR de ${pct(tir)} se compara con el WACC de ${pct(wacc)}.`:""} Bajo estos supuestos, los beneficios no compensan el costo de capital.`;
+ }else{
+   decision.innerHTML=`<strong>Escenario aproximadamente indiferente.</strong> El VPN se encuentra cercano a cero: el proyecto rinde aproximadamente el costo de capital.`;
+ }
+ poner("sFormVPN",`VPN = Σ [FCLₜ / (1 + WACC)ᵗ]. Con WACC = ${pct(wacc)}, la suma de los valores presentes de los flujos, incluyendo el desembolso del año 0, es Q${fmt(vpn,1)} mil.`);
+ poner("sFormTIR",tir===null?"TIR: no se encontró una raíz válida para la combinación actual de flujos.":`TIR = tasa que hace VPN = 0. Para los flujos actuales, TIR ≈ ${pct(tir)}; referencia WACC = ${pct(wacc)}.`);
+ poner("sResumen",`El escenario supone una inversión inicial de Q${fmt(inversion,0)} mil más Q${fmt(ct,0)} mil de capital de trabajo. La depreciación anual es Q${fmt(dep,1)} mil durante ${vida} años. El resultado debe interpretarse únicamente bajo los supuestos ingresados: modificar inversión, beneficios, costos, vida útil o valor de rescate recalcula inmediatamente la creación o destrucción de valor.`);
+}
+["sInversion","sVida","sRescate","sAhorro","sCosto","sCrecimiento","sCT","sRecCT","sISR"].forEach(id=>document.getElementById(id).addEventListener("input",calcularPaso6));
+["p4Rf","p4Beta","p4PRM","p4Pais"].forEach(id=>document.getElementById(id).addEventListener("input",calcularPaso6));
+
+
+function variacionPct(actual,anterior){
+ if(!Number.isFinite(actual)||!Number.isFinite(anterior)||anterior===0) return null;
+ return (actual-anterior)/Math.abs(anterior);
+}
+function fraseVar(nombre,actual,anterior){
+ const v=variacionPct(actual,anterior);
+ if(v===null) return `${nombre}: no es posible obtener una variación porcentual comparable.`;
+ const verbo=Math.abs(v)<0.00005?"se mantuvo prácticamente sin cambio":v>0?"aumentó":"disminuyó";
+ return `${nombre} ${verbo} ${pct(Math.abs(v))} entre 2024 y 2025`;
+}
+function rec(txt){return `<p class="recomendacion"><strong>Lectura / acción:</strong> ${txt}</p>`;}
+
+function calcularAnalisisDinamico(){
+ const a24=n("activo24"),a25=n("activo25"),ac25=n("activoCorriente25");
+ const p24=n("pasivo24"),p25=n("pasivo25"),pat24=n("patrimonio24"),pat25=n("patrimonio25");
+ const inv24=n("inventario24"),inv25=n("inventario25"),cxc24=n("cxc24"),cxc25=n("cxc25");
+ const ventas24=n("ventas24"),ventas25=n("ventas25"),ub24=n("utilidadBruta24"),ub25=n("utilidadBruta25");
+ const ebit24=n("ebit24"),ebit25=n("ebit25"),un24=n("utilidadNeta24"),un25=n("utilidadNeta25");
+ const margenBr24=seguro(ub24,ventas24),margenBr25=seguro(ub25,ventas25);
+ const margenOp24=seguro(ebit24,ventas24),margenOp25=seguro(ebit25,ventas25);
+ const margenNet24=seguro(un24,ventas24),margenNet25=seguro(un25,ventas25);
+ const vVentas=variacionPct(ventas25,ventas24),vUN=variacionPct(un25,un24),vInv=variacionPct(inv25,inv24),vCxC=variacionPct(cxc25,cxc24);
+
+ let balance=`<p>${fraseVar("El activo total",a25,a24)}; ${fraseVar("el pasivo total",p25,p24)} y ${fraseVar("el patrimonio",pat25,pat24)}.</p>`;
+ balance+=`<p>En 2025, el activo corriente representa ${pct(seguro(ac25,a25))} del activo total. Los inventarios representan ${pct(seguro(inv25,a25))} y las cuentas por cobrar ${pct(seguro(cxc25,a25))}.</p>`;
+ if(vVentas!==null&&vInv!==null&&vInv>vVentas){
+   balance+=rec(`El inventario crece más rápido que las ventas (${pct(vInv)} frente a ${pct(vVentas)}). Revise si responde a estacionalidad necesaria o si está aumentando el capital inmovilizado.`);
+ }else if(vVentas!==null&&vCxC!==null&&vCxC>vVentas){
+   balance+=rec(`Las cuentas por cobrar crecen más rápido que las ventas (${pct(vCxC)} frente a ${pct(vVentas)}). Conviene revisar condiciones de crédito y disciplina de cobranza.`);
+ }else{
+   balance+=rec(`Mantenga bajo seguimiento el crecimiento de inventarios y cuentas por cobrar frente a las ventas para evitar que la expansión comercial absorba efectivo de forma desproporcionada.`);
+ }
+ ponerHTML("aBalance",balance);
+
+ let resultados=`<p>${fraseVar("Las ventas",ventas25,ventas24)}. ${fraseVar("La utilidad bruta",ub25,ub24)}; ${fraseVar("el EBIT",ebit25,ebit24)} y ${fraseVar("la utilidad neta",un25,un24)}.</p>`;
+ resultados+=`<p>Márgenes 2024 → 2025: bruto ${pct(margenBr24)} → ${pct(margenBr25)}, operativo ${pct(margenOp24)} → ${pct(margenOp25)} y neto ${pct(margenNet24)} → ${pct(margenNet25)}.</p>`;
+ if(vVentas!==null&&vUN!==null&&vUN<vVentas){
+   resultados+=rec(`La utilidad neta crece a un ritmo inferior a las ventas. Revise costos, gastos operativos y costo financiero para identificar por qué el crecimiento comercial no se traslada proporcionalmente al resultado final.`);
+ }else if(vVentas!==null&&vUN!==null&&vUN>vVentas){
+   resultados+=rec(`La utilidad neta crece más rápido que las ventas. Identifique qué mejoras de margen, costos o gastos explican esta evolución para evaluar su sostenibilidad.`);
+ }else{
+   resultados+=rec(`Analice conjuntamente el crecimiento de ventas y la evolución de márgenes; mayores ingresos no garantizan por sí solos mayor rentabilidad.`);
+ }
+ ponerHTML("aResultados",resultados);
+
+ const pc=n("pasivoCorriente25");
+ const rc=seguro(ac25,pc),pa=seguro(ac25-inv25,pc),ct=ac25-pc;
+ let liq=`<p>Razón corriente ${veces(rc)}: Q${fmt(rc,2)} de activo corriente por cada Q1.00 de pasivo corriente. Prueba ácida ${veces(pa)} y capital de trabajo Q${fmt(ct,0)} mil.</p>`;
+ liq+=`<p>La diferencia entre razón corriente y prueba ácida es ${fmt(rc-pa,2)}x y refleja el peso del inventario dentro de la liquidez corriente.</p>`;
+ liq+=rec(ct>=0?`El capital de trabajo contable es positivo. Complemente esta lectura con DIO, DSO y CCC para determinar cuánto tiempo permanece comprometida la liquidez.`:`Los pasivos corrientes superan los activos corrientes. Revise vencimientos, cobranza, conversión de inventarios y necesidades de financiamiento de corto plazo.`);
+ ponerHTML("aLiquidez",liq);
+
+ const deudaRatio=seguro(p25,a25),de=seguro(p25,pat25),cobertura=seguro(ebit25,n("gastosFin25"));
+ let deu=`<p>Los pasivos representan ${pct(deudaRatio)} del activo total. Pasivo/Patrimonio = ${veces(de)} y la cobertura EBIT/gastos financieros = ${veces(cobertura)}.</p>`;
+ deu+=rec(`Lea el apalancamiento junto con la cobertura de intereses y el WACC. Una variación en deuda puede afectar simultáneamente riesgo financiero, capacidad de pago y costo de capital.`);
+ ponerHTML("aDeuda",deu);
+
+ const actProm=promedio(a24,a25),patProm=promedio(pat24,pat25);
+ const roa=seguro(un25,actProm),roe=seguro(un25,patProm),rotAct=seguro(ventas25,actProm),mult=seguro(actProm,patProm);
+ let rent=`<p>ROA = ${pct(roa)} y ROE = ${pct(roe)}. DuPont descompone el ROE en margen neto ${pct(margenNet25)}, rotación de activos ${veces(rotAct)} y multiplicador de capital ${veces(mult)}.</p>`;
+ rent+=rec(`No atribuya el ROE únicamente al margen. DuPont permite distinguir el efecto de rentabilidad sobre ventas, eficiencia de activos y apalancamiento.`);
+ ponerHTML("aRentabilidad",rent);
+
+ const invProm=promedio(inv24,inv25),arProm=promedio(cxc24,cxc25),apProm=promedio(n("cxp24"),n("cxp25"));
+ const dio=seguro(invProm,n("costoVentas25"))*365,dso=seguro(arProm,ventas25)*365,dpo=seguro(apProm,n("costoVentas25"))*365,ccc=dio+dso-dpo;
+ const otif=seguro(n("embarquesOTIF"),n("embarquesProgramados")),fill=seguro(n("volumenDespachado"),n("volumenPedido"));
+ const dominante=dio>=dso?`inventario (${fmt(dio,1)} días)`:`cuentas por cobrar (${fmt(dso,1)} días)`;
+ let cap=`<p>DIO ${dias(dio)}, DSO ${dias(dso)}, DPO ${dias(dpo)} y CCC ${dias(ccc)}. OTIF = ${pct(otif)} y fill rate = ${pct(fill)}.</p>`;
+ cap+=`<p>El componente de mayor duración antes del cobro es ${dominante}; el DPO compensa ${fmt(dpo,1)} días mediante financiamiento de proveedores.</p>`;
+ cap+=rec(`Evalúe conjuntamente inventario y servicio: aumentar disponibilidad puede mejorar fill rate pero también elevar DIO. OTIF ayuda a separar disponibilidad de inventario del cumplimiento completo y a tiempo.`);
+ ponerHTML("aCapitalTrabajo",cap);
+
+ const cv=n("cvCostoVentas")+n("cvFletes"),cf=n("cfVenta")+n("cfAdmin"),mc=ventas25-cv,pmc=seguro(mc,ventas25);
+ const pe=seguro(cf,pmc),ms=seguro(ventas25-pe,ventas25),gao=seguro(mc,ebit25);
+ let costos=`<p>Margen de contribución Q${fmt(mc,0)} mil (${pct(pmc)}), punto de equilibrio Q${fmt(pe,0)} mil, margen de seguridad ${pct(ms)} y GAO ${veces(gao)}.</p>`;
+ costos+=rec(`El margen de seguridad muestra cuánto pueden reducirse las ventas antes de alcanzar el punto de equilibrio. El GAO aproxima la sensibilidad del EBIT ante cambios porcentuales en ventas alrededor del nivel actual.`);
+ ponerHTML("aCostos",costos);
+
+ const fco=un25+n("depreciacion25")-(n("cxc25")-n("cxc24"))-(n("inventario25")-n("inventario24"))-(n("anticipado25")-n("anticipado24"))+(n("cxp25")-n("cxp24"))+(n("impuestosPagar25")-n("impuestosPagar24"))+(n("provisiones25")-n("provisiones24"))+(n("isrDiferido25")-n("isrDiferido24"));
+ const capex=n("ppe25")-n("ppe24")+n("depreciacion25"),fci=-capex-(n("otrosActivos25")-n("otrosActivos24"));
+ const deuda24=n("deudaCP24")+n("deudaLP24"),deuda25=n("deudaCP25")+n("deudaLP25");
+ const dividendos=pat24+un25-pat25,fcf=(deuda25-deuda24)-dividendos;
+ const cambioCalc=fco+fci+fcf,cambioReal=n("efectivo25")-n("efectivo24");
+ let efe=`<p>FCO Q${fmt(fco,0)} mil; FCI Q${fmt(fci,0)} mil; flujo de financiamiento Q${fmt(fcf,0)} mil. Variación calculada de efectivo Q${fmt(cambioCalc,0)} mil frente a Q${fmt(cambioReal,0)} mil observados.</p>`;
+ efe+=rec(fco>=0?`La operación genera efectivo. Analice si ese flujo cubre inversión y distribuciones sin requerir un aumento desproporcionado del financiamiento.`:`La operación consume efectivo. Revise especialmente las variaciones de cuentas por cobrar, inventarios y cuentas por pagar que explican el flujo operativo.`);
+ ponerHTML("aEFE",efe);
+
+ const dProm=promedio(deuda24,deuda25),kd=seguro(n("gastosFin25"),dProm),tax=seguro(n("isr25"),n("uai25")),kdN=kd*(1-tax);
+ const ke=n("p4Rf")/100+n("p4Beta")*(n("p4PRM")/100)+n("p4Pais")/100,wacc=window.waccActual||0;
+ let capital=`<p>Kd antes de impuestos ${pct(kd)}, Kd después de impuestos ${pct(kdN)}, Ke ${pct(ke)} y WACC ${pct(wacc)}.</p>`;
+ capital+=rec(`El WACC funciona como referencia de descuento para inversiones con riesgo comparable. Cambios en deuda, patrimonio, costo financiero o supuestos CAPM modifican esta tasa y, por tanto, la evaluación del Paso 6.`);
+ ponerHTML("aCapital",capital);
+}
+
+function recalcularTodo(){
+ recalcularEstadosFinancieros();
+ calcularKPIs();
+ calcularPaso3();
+ calcularPaso4();
+ calcularPaso5();
+ calcularPaso6();
+ calcularAnalisisDinamico();
+}
+
+// Solo las cuentas base editables disparan la cadena completa.
+// Los campos readonly son resultados derivados y no requieren listeners propios.
+document.querySelectorAll('#paso1 input[type="number"]:not([readonly])').forEach(el=>{
+ el.addEventListener("input",recalcularTodo);
+});
+
+recalcularTodo();
+</script>
+</body>
+</html>
