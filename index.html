@@ -80,6 +80,17 @@ input.campo-calculado{
 }
 
 
+
+/* MOTOR DE DIAGNÓSTICO DINÁMICO V1.1 */
+.analisis-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:18px 0}
+.analisis-card{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:18px;box-shadow:0 3px 12px rgba(15,23,42,.04)}
+.analisis-card h4{margin:0 0 10px;color:#172554;font-size:14px}
+.analisis-card p{margin:7px 0;font-size:12px;line-height:1.65;color:#475569}
+.analisis-card .recomendacion{margin-top:12px;padding:11px 12px;background:#f8fafc;border-left:4px solid #334155;border-radius:6px;color:#334155}
+.motor-box{background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;padding:18px;margin:20px 0}
+.motor-box h3{margin:0 0 8px;color:#172554}
+@media(max-width:900px){.analisis-grid{grid-template-columns:1fr}}
+
 /* PASO 6 */
 .sim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:20px}
 .resultado-inversion{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0}
@@ -235,6 +246,15 @@ input.campo-calculado{
 <p class="nota">Estos datos se utilizan para calcular OTIF y fill rate.</p>
 </div>
 
+
+<div class="motor-box">
+<h3>Análisis dinámico de los estados financieros</h3>
+<p class="nota">Se actualiza automáticamente con cada cambio. Combina análisis horizontal 2024–2025, composición de las cuentas y relaciones entre partidas sin asumir que existe un único valor “correcto” para todos los sectores.</p>
+<div class="analisis-grid">
+<div class="analisis-card"><h4>Balance General</h4><div id="aBalance">—</div></div>
+<div class="analisis-card"><h4>Estado de Resultados</h4><div id="aResultados">—</div></div>
+</div>
+</div>
 <div class="acciones"><button class="boton-principal" id="continuarPaso2">Calcular KPIs y continuar →</button></div>
 </section>
 
@@ -284,6 +304,16 @@ input.campo-calculado{
 </div>
 
 <div class="resumen"><h3>Lectura integrada del Paso 2</h3><p id="resumenPaso2">—</p></div>
+
+<div class="motor-box">
+<h3>Interpretación financiera y logística dinámica</h3>
+<div class="analisis-grid">
+<div class="analisis-card"><h4>Liquidez</h4><div id="aLiquidez">—</div></div>
+<div class="analisis-card"><h4>Endeudamiento</h4><div id="aDeuda">—</div></div>
+<div class="analisis-card"><h4>Rentabilidad y DuPont</h4><div id="aRentabilidad">—</div></div>
+<div class="analisis-card"><h4>Capital de trabajo y servicio</h4><div id="aCapitalTrabajo">—</div></div>
+</div>
+</div>
 <div class="acciones"><button class="boton-secundario" data-ir="paso1">← Revisar datos</button><button class="boton-principal" data-ir="paso3">Continuar a Costos y EFE →</button></div>
 </section>
 
@@ -372,6 +402,12 @@ input.campo-calculado{
 <details><summary>Ver conciliación completa</summary><div class="formula" id="efeFormConciliacion"></div></details>
 
 <div class="resumen"><h3>Lectura del flujo de caja</h3><p id="p3ResumenEFE">—</p></div>
+
+<div class="motor-box"><h3>Interpretación dinámica — Costos y efectivo</h3>
+<div class="analisis-grid">
+<div class="analisis-card"><h4>Estructura costo-volumen-utilidad</h4><div id="aCostos">—</div></div>
+<div class="analisis-card"><h4>Estado de Flujo de Efectivo</h4><div id="aEFE">—</div></div>
+</div></div>
 <div class="acciones"><button class="boton-secundario" data-ir="paso2">← Volver a KPIs</button><button class="boton-principal" data-ir="paso4">Continuar a Costo de Capital →</button></div>
 </section>
 
@@ -431,6 +467,10 @@ input.campo-calculado{
 </div>
 
 <div class="resumen"><h3>Lectura financiera del Paso 4</h3><p id="p4Resumen">—</p></div>
+
+<div class="motor-box"><h3>Interpretación dinámica — Costo de capital</h3>
+<div class="analisis-card"><h4>Kd, Ke y WACC</h4><div id="aCapital">—</div></div>
+</div>
 <div class="acciones"><button class="boton-secundario" data-ir="paso3">← Volver a Costos y EFE</button><button class="boton-principal" data-ir="paso5">Continuar al Dashboard →</button></div>
 </section>
 
@@ -581,6 +621,7 @@ const dias=x=>Number.isFinite(x)?fmt(x,2)+" días":"—";
 const seguro=(num,den)=>den!==0?num/den:NaN;
 
 function poner(id,valor){document.getElementById(id).textContent=valor}
+function ponerHTML(id,valor){const el=document.getElementById(id); if(el) el.innerHTML=valor}
 function estado(id,texto,clase){
  const el=document.getElementById(id); el.textContent=texto; el.className="estado "+clase;
 }
@@ -998,6 +1039,101 @@ function calcularPaso6(){
 ["sInversion","sVida","sRescate","sAhorro","sCosto","sCrecimiento","sCT","sRecCT","sISR"].forEach(id=>document.getElementById(id).addEventListener("input",calcularPaso6));
 ["p4Rf","p4Beta","p4PRM","p4Pais"].forEach(id=>document.getElementById(id).addEventListener("input",calcularPaso6));
 
+
+function variacionPct(actual,anterior){
+ if(!Number.isFinite(actual)||!Number.isFinite(anterior)||anterior===0) return null;
+ return (actual-anterior)/Math.abs(anterior);
+}
+function fraseVar(nombre,actual,anterior){
+ const v=variacionPct(actual,anterior);
+ if(v===null) return `${nombre}: no es posible obtener una variación porcentual comparable.`;
+ const verbo=Math.abs(v)<0.00005?"se mantuvo prácticamente sin cambio":v>0?"aumentó":"disminuyó";
+ return `${nombre} ${verbo} ${pct(Math.abs(v))} entre 2024 y 2025`;
+}
+function rec(txt){return `<p class="recomendacion"><strong>Lectura / acción:</strong> ${txt}</p>`;}
+
+function calcularAnalisisDinamico(){
+ const a24=n("activo24"),a25=n("activo25"),ac25=n("activoCorriente25");
+ const p24=n("pasivo24"),p25=n("pasivo25"),pat24=n("patrimonio24"),pat25=n("patrimonio25");
+ const inv24=n("inventario24"),inv25=n("inventario25"),cxc24=n("cxc24"),cxc25=n("cxc25");
+ const ventas24=n("ventas24"),ventas25=n("ventas25"),ub24=n("utilidadBruta24"),ub25=n("utilidadBruta25");
+ const ebit24=n("ebit24"),ebit25=n("ebit25"),un24=n("utilidadNeta24"),un25=n("utilidadNeta25");
+ const margenBr24=seguro(ub24,ventas24),margenBr25=seguro(ub25,ventas25);
+ const margenOp24=seguro(ebit24,ventas24),margenOp25=seguro(ebit25,ventas25);
+ const margenNet24=seguro(un24,ventas24),margenNet25=seguro(un25,ventas25);
+ const vVentas=variacionPct(ventas25,ventas24),vUN=variacionPct(un25,un24),vInv=variacionPct(inv25,inv24),vCxC=variacionPct(cxc25,cxc24);
+
+ let balance=`<p>${fraseVar("El activo total",a25,a24)}; ${fraseVar("el pasivo total",p25,p24)} y ${fraseVar("el patrimonio",pat25,pat24)}.</p>`;
+ balance+=`<p>En 2025, el activo corriente representa ${pct(seguro(ac25,a25))} del activo total. Los inventarios representan ${pct(seguro(inv25,a25))} y las cuentas por cobrar ${pct(seguro(cxc25,a25))}.</p>`;
+ if(vVentas!==null&&vInv!==null&&vInv>vVentas){
+   balance+=rec(`El inventario crece más rápido que las ventas (${pct(vInv)} frente a ${pct(vVentas)}). Revise si responde a estacionalidad necesaria o si está aumentando el capital inmovilizado.`);
+ }else if(vVentas!==null&&vCxC!==null&&vCxC>vVentas){
+   balance+=rec(`Las cuentas por cobrar crecen más rápido que las ventas (${pct(vCxC)} frente a ${pct(vVentas)}). Conviene revisar condiciones de crédito y disciplina de cobranza.`);
+ }else{
+   balance+=rec(`Mantenga bajo seguimiento el crecimiento de inventarios y cuentas por cobrar frente a las ventas para evitar que la expansión comercial absorba efectivo de forma desproporcionada.`);
+ }
+ ponerHTML("aBalance",balance);
+
+ let resultados=`<p>${fraseVar("Las ventas",ventas25,ventas24)}. ${fraseVar("La utilidad bruta",ub25,ub24)}; ${fraseVar("el EBIT",ebit25,ebit24)} y ${fraseVar("la utilidad neta",un25,un24)}.</p>`;
+ resultados+=`<p>Márgenes 2024 → 2025: bruto ${pct(margenBr24)} → ${pct(margenBr25)}, operativo ${pct(margenOp24)} → ${pct(margenOp25)} y neto ${pct(margenNet24)} → ${pct(margenNet25)}.</p>`;
+ if(vVentas!==null&&vUN!==null&&vUN<vVentas){
+   resultados+=rec(`La utilidad neta crece a un ritmo inferior a las ventas. Revise costos, gastos operativos y costo financiero para identificar por qué el crecimiento comercial no se traslada proporcionalmente al resultado final.`);
+ }else if(vVentas!==null&&vUN!==null&&vUN>vVentas){
+   resultados+=rec(`La utilidad neta crece más rápido que las ventas. Identifique qué mejoras de margen, costos o gastos explican esta evolución para evaluar su sostenibilidad.`);
+ }else{
+   resultados+=rec(`Analice conjuntamente el crecimiento de ventas y la evolución de márgenes; mayores ingresos no garantizan por sí solos mayor rentabilidad.`);
+ }
+ ponerHTML("aResultados",resultados);
+
+ const pc=n("pasivoCorriente25");
+ const rc=seguro(ac25,pc),pa=seguro(ac25-inv25,pc),ct=ac25-pc;
+ let liq=`<p>Razón corriente ${veces(rc)}: Q${fmt(rc,2)} de activo corriente por cada Q1.00 de pasivo corriente. Prueba ácida ${veces(pa)} y capital de trabajo Q${fmt(ct,0)} mil.</p>`;
+ liq+=`<p>La diferencia entre razón corriente y prueba ácida es ${fmt(rc-pa,2)}x y refleja el peso del inventario dentro de la liquidez corriente.</p>`;
+ liq+=rec(ct>=0?`El capital de trabajo contable es positivo. Complemente esta lectura con DIO, DSO y CCC para determinar cuánto tiempo permanece comprometida la liquidez.`:`Los pasivos corrientes superan los activos corrientes. Revise vencimientos, cobranza, conversión de inventarios y necesidades de financiamiento de corto plazo.`);
+ ponerHTML("aLiquidez",liq);
+
+ const deudaRatio=seguro(p25,a25),de=seguro(p25,pat25),cobertura=seguro(ebit25,n("gastosFin25"));
+ let deu=`<p>Los pasivos representan ${pct(deudaRatio)} del activo total. Pasivo/Patrimonio = ${veces(de)} y la cobertura EBIT/gastos financieros = ${veces(cobertura)}.</p>`;
+ deu+=rec(`Lea el apalancamiento junto con la cobertura de intereses y el WACC. Una variación en deuda puede afectar simultáneamente riesgo financiero, capacidad de pago y costo de capital.`);
+ ponerHTML("aDeuda",deu);
+
+ const actProm=promedio(a24,a25),patProm=promedio(pat24,pat25);
+ const roa=seguro(un25,actProm),roe=seguro(un25,patProm),rotAct=seguro(ventas25,actProm),mult=seguro(actProm,patProm);
+ let rent=`<p>ROA = ${pct(roa)} y ROE = ${pct(roe)}. DuPont descompone el ROE en margen neto ${pct(margenNet25)}, rotación de activos ${veces(rotAct)} y multiplicador de capital ${veces(mult)}.</p>`;
+ rent+=rec(`No atribuya el ROE únicamente al margen. DuPont permite distinguir el efecto de rentabilidad sobre ventas, eficiencia de activos y apalancamiento.`);
+ ponerHTML("aRentabilidad",rent);
+
+ const invProm=promedio(inv24,inv25),arProm=promedio(cxc24,cxc25),apProm=promedio(n("cxp24"),n("cxp25"));
+ const dio=seguro(invProm,n("costoVentas25"))*365,dso=seguro(arProm,ventas25)*365,dpo=seguro(apProm,n("costoVentas25"))*365,ccc=dio+dso-dpo;
+ const otif=seguro(n("embarquesOTIF"),n("embarquesProgramados")),fill=seguro(n("volumenDespachado"),n("volumenPedido"));
+ const dominante=dio>=dso?`inventario (${fmt(dio,1)} días)`:`cuentas por cobrar (${fmt(dso,1)} días)`;
+ let cap=`<p>DIO ${dias(dio)}, DSO ${dias(dso)}, DPO ${dias(dpo)} y CCC ${dias(ccc)}. OTIF = ${pct(otif)} y fill rate = ${pct(fill)}.</p>`;
+ cap+=`<p>El componente de mayor duración antes del cobro es ${dominante}; el DPO compensa ${fmt(dpo,1)} días mediante financiamiento de proveedores.</p>`;
+ cap+=rec(`Evalúe conjuntamente inventario y servicio: aumentar disponibilidad puede mejorar fill rate pero también elevar DIO. OTIF ayuda a separar disponibilidad de inventario del cumplimiento completo y a tiempo.`);
+ ponerHTML("aCapitalTrabajo",cap);
+
+ const cv=n("cvCostoVentas")+n("cvFletes"),cf=n("cfVenta")+n("cfAdmin"),mc=ventas25-cv,pmc=seguro(mc,ventas25);
+ const pe=seguro(cf,pmc),ms=seguro(ventas25-pe,ventas25),gao=seguro(mc,ebit25);
+ let costos=`<p>Margen de contribución Q${fmt(mc,0)} mil (${pct(pmc)}), punto de equilibrio Q${fmt(pe,0)} mil, margen de seguridad ${pct(ms)} y GAO ${veces(gao)}.</p>`;
+ costos+=rec(`El margen de seguridad muestra cuánto pueden reducirse las ventas antes de alcanzar el punto de equilibrio. El GAO aproxima la sensibilidad del EBIT ante cambios porcentuales en ventas alrededor del nivel actual.`);
+ ponerHTML("aCostos",costos);
+
+ const fco=un25+n("depreciacion25")-(n("cxc25")-n("cxc24"))-(n("inventario25")-n("inventario24"))-(n("anticipado25")-n("anticipado24"))+(n("cxp25")-n("cxp24"))+(n("impuestosPagar25")-n("impuestosPagar24"))+(n("provisiones25")-n("provisiones24"))+(n("isrDiferido25")-n("isrDiferido24"));
+ const capex=n("ppe25")-n("ppe24")+n("depreciacion25"),fci=-capex-(n("otrosActivos25")-n("otrosActivos24"));
+ const deuda24=n("deudaCP24")+n("deudaLP24"),deuda25=n("deudaCP25")+n("deudaLP25");
+ const dividendos=pat24+un25-pat25,fcf=(deuda25-deuda24)-dividendos;
+ const cambioCalc=fco+fci+fcf,cambioReal=n("efectivo25")-n("efectivo24");
+ let efe=`<p>FCO Q${fmt(fco,0)} mil; FCI Q${fmt(fci,0)} mil; flujo de financiamiento Q${fmt(fcf,0)} mil. Variación calculada de efectivo Q${fmt(cambioCalc,0)} mil frente a Q${fmt(cambioReal,0)} mil observados.</p>`;
+ efe+=rec(fco>=0?`La operación genera efectivo. Analice si ese flujo cubre inversión y distribuciones sin requerir un aumento desproporcionado del financiamiento.`:`La operación consume efectivo. Revise especialmente las variaciones de cuentas por cobrar, inventarios y cuentas por pagar que explican el flujo operativo.`);
+ ponerHTML("aEFE",efe);
+
+ const dProm=promedio(deuda24,deuda25),kd=seguro(n("gastosFin25"),dProm),tax=seguro(n("isr25"),n("uai25")),kdN=kd*(1-tax);
+ const ke=n("p4Rf")/100+n("p4Beta")*(n("p4PRM")/100)+n("p4Pais")/100,wacc=window.waccActual||0;
+ let capital=`<p>Kd antes de impuestos ${pct(kd)}, Kd después de impuestos ${pct(kdN)}, Ke ${pct(ke)} y WACC ${pct(wacc)}.</p>`;
+ capital+=rec(`El WACC funciona como referencia de descuento para inversiones con riesgo comparable. Cambios en deuda, patrimonio, costo financiero o supuestos CAPM modifican esta tasa y, por tanto, la evaluación del Paso 6.`);
+ ponerHTML("aCapital",capital);
+}
+
 function recalcularTodo(){
  recalcularEstadosFinancieros();
  calcularKPIs();
@@ -1005,6 +1141,7 @@ function recalcularTodo(){
  calcularPaso4();
  calcularPaso5();
  calcularPaso6();
+ calcularAnalisisDinamico();
 }
 
 // Solo las cuentas base editables disparan la cadena completa.
